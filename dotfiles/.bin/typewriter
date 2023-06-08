@@ -1,0 +1,23 @@
+#!/bin/bash
+# Typewriter
+# written by Adam Davenport, 2016. All rights reserved.
+# Slight modifications by CoolCat467 in 2020
+
+s=$1		# init string variable
+l=${#s}		# convert string to an array
+i="0"		# init counter
+t=$2
+[[ $t == '' ]] && t="0.1"		# set typewriter-key delay
+
+#clear
+
+while [[ $i -le $l ]]
+do
+        echo -n "${s:i:1}"
+	((i++))
+        sleep $t
+done
+
+echo
+
+#exit 0

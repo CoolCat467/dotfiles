@@ -1,0 +1,59 @@
+#!/bin/bash
+# Program that e=sends mail from the command line
+
+function getype {
+	echo "1 - Simple email"
+	echo "2 - Complex email"
+	echo "3 - Quit"
+	echo -n "Please enter an option and press RETURN: "
+	read Vactype
+	[[ "$Vactype" = "3" ]] && clear
+	[[ "$Vactype" != "1" ]] &&
+	[[ "$Vactype" != "2" ]] &&
+	[[ "$Vactype" != "3" ]] &&
+	clear &&
+	echo "Please enter the numeric value of the option." &&
+	echo "(press RETURN to continue)" &&
+	read && getype
+}
+
+function getaddr {
+	echo "Please enter the email"
+	echo "address and press RETURN"
+	read Vaddr
+}
+
+function getsub {
+	echo "Please enter the email"
+	echo "subject and press RETURN"
+	read Vsub
+}
+
+function getmesg {
+	echo "Please enter the message"
+	echo "you want to send and press RETURN"
+	read Vmesg
+}
+
+function send {
+	[[ "$Vactype" = "1" ]] &&
+	echo "$Vmesg" | ssmtp $Vaddr && echo "Message sent!"
+	[[ "$Vactype" = "2" ]] &&
+	printf "To: $Vaddr\nFrom: Raspberry Pi\nSubject: $Vsub\n\n$Vmesg\n" | ssmtp -t && echo "Message sent!"
+}
+
+function main {
+	echo "Welcome to the mail thing!"
+	echo
+	getype
+	echo
+	getaddr
+	echo
+	[[ "$Vactype" = "2" ]] && getsub && echo
+	getmesg
+	echo
+	send
+	echo "Thank you fou using the mail servace!"
+}
+
+main

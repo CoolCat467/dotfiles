@@ -1,0 +1,184 @@
+#!/bin/bash
+# Program that plays songs
+# Coded by Samuel Davenport.
+# Parts of code adapted from Adam Davenport's Menu System.
+# Parts of code adapted from Samuel Davenport's Update program.
+# All rights reserved.
+
+
+## VARIABLE SETUP ##
+Vloop=0
+Vsoundm="hdmi"
+Vswback="False"
+
+
+## FUNCTIONS ###
+
+function smenu {
+	echo "Welcome to the Sound Selection Menu"
+	echo
+	echo "1. - Play Sound Through Local"
+	echo "2. - Play Sound Through Hdmi"
+	echo "3. - Play Sound Through Both Local & Hdmi"
+	echo "4. - Play Sound Through Alsa"
+	echo
+	echo -n "Please enter an option and press RETURN: "
+	read sinput
+
+	### MENU INPUT ###
+	# INPUT ERROR
+	[[ "$sinput" != "1" ]] &&
+	[[ "$sinput" != "2" ]] &&
+	[[ "$sinput" != "3" ]] &&
+	[[ "$sinput" != "4" ]] &&
+	#clear &&
+	echo "Please enter the numeric value of the option." &&
+	echo "(press RETURN to continue)" &&
+	read && smenu
+
+	# VALID INPUT
+	[[ "$input" = "1" ]] && Vsoundm=local
+	[[ "$input" = "2" ]] && Vsoundm=hdmi
+	[[ "$input" = "3" ]] && Vsoundm=both
+	[[ "$input" = "4" ]] && Vsoundm=alsa
+}
+
+function menu {
+	### SELECTION SCREEN ###
+	echo "Welcome to the Media Player Menu"
+	echo
+	echo "1. - Play All Songs"
+	echo "2. - Play Good Songs"
+	echo "3. - Play Bad Songs"
+	echo "4. - Play Chosen Songs"
+	echo "5. - Play Custom File"
+	echo
+	echo -n "Please enter an option and press RETURN: "
+	read input
+
+	### MENU INPUT ###
+	# INPUT ERROR
+	[[ "$input" != "1" ]] &&
+		[[ "$input" != "2" ]] &&
+			[[ "$input" != "3" ]] &&
+				[[ "$input" != "4" ]] &&
+					[[ "$input" != "5" ]] &&
+						#clear &&
+						echo "Please enter the numeric value of the option." &&
+						echo "(press RETURN to continue)" &&
+						read &&
+						menu
+	# VALID INPUT
+	[[ "$input" = "1" ]] && playAll
+	[[ "$input" = "2" ]] && playGood
+	[[ "$input" = "3" ]] && playBad
+	[[ "$input" = "4" ]] && choose
+	[[ "$input" = "5" ]] && choosefile
+}
+
+function loadMusic {
+	echo "Loading..."
+	cd $HOME/.bin/
+	Vpresel=$VMusic
+	[[ "$VMusic" = "choose" ]] && VMusic="all" && Vswback="True"
+	[[ "$VMusic" = "all" ]] && VCat=$(python/Music.py -reflist)
+	[[ "$VMusic" = "good" ]] && VCat=$(python/Music.py -getgood)
+	[[ "$VMusic" = "bad" ]] && VCat=$(python/Music.py -getbad)
+	[[ "$Vswback" = "True" ]] && VMusic=$Vpresel
+	[[ "$VMusic" = "choose" ]] && python/chooseMusic.py
+	VCat=$(python/Music.py -mkprog -soundmode=$Vsoundm)
+	#cd dep
+	#touch tmp.sh
+	#chmod 755 tmp.sh
+	#echo "#!/bin/bash" > tmp.sh
+	#cd ..
+	chmod 755 dep/tmprog.sh
+	dep/tmprog.sh
+	rm dep/tmprog.sh
+	rm dep/music.txt
+	echo
+	echo "Done!"
+	sleep 1
+}
+
+function runMusic {
+	#clear
+	echo "Begining Playlist..."
+	echo
+	cd $HOME/.bin/
+	dep/tmp.sh
+	echo
+	[[ "$Vloop" = "1" ]] && runMusic
+}
+
+function play {
+	VPrevDir=$(python3 -c 'import os; print(os.getcwd())')
+	loadMusic
+	runMusic
+	rm dep/tmp.sh
+	cd $VPrevDir
+}
+
+function playAll {
+	#clear
+	VMusic='all'
+	play
+	quit
+}
+
+function playGood {
+	#clear
+	VMusic='good'
+	play
+	quit
+}
+
+function playBad {
+	#clear
+	VMusic='bad'
+	play
+	quit
+}
+
+function choose {
+	#clear
+	######### Selection Screen ##########
+	echo "Please enter y if the"
+	echo "displayed song should"
+	echo "be played, and then"
+	echo "press enter."
+	echo
+	VMusic='choose'
+	play
+}
+
+function choosefile {
+	#clear
+	echo
+	echo -n "Path to File: "
+	read Vfile
+	VPrevDir=$(python3 -c 'import os; print(os.getcwd())')
+	cd $HOME/.bin/dep
+	touch tmp.sh
+	chmod 755 tmp.sh
+	echo "#!/bin/bash" > tmp.sh
+	echo "omxplayer -o $Vsoundm $Vfile" >> tmp.sh
+	playfile
+	cd $VPrevDir
+}
+
+function playfile {
+	runMusic
+}
+
+function quit {
+	#clear
+	echo "Have a great day! "
+}
+
+###Main###
+#clear
+[[ $1 = "-l" ]] && Vloop=1
+smenu
+#clear
+menu

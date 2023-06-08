@@ -1,0 +1,22 @@
+#!/bin/bash
+# Cleans up apt-get
+# Version 0.0.0
+# Coded by CoolCat467.
+
+function CleanApt {
+	echo "Cleaning up Apt..."
+	sudo apt-get autoclean
+	sudo apt-get purge
+	sudo apt-get autoremove
+	sudo apt-get check
+}
+
+function main {
+	echo "Please enter password to continue."
+	sudo -v
+	echo
+	CleanApt
+	echo "Done!"
+}
+
+main

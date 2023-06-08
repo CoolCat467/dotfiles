@@ -1,0 +1,30 @@
+#!/bin/bash
+# Flopy Disk!!!!
+# Programmed by CoolCat467.
+
+function floppyI {
+	echo "   ________________________   "
+	echo "  /   __________________   \  "
+	echo " |   |   __        __   |   | "
+	echo " |   |  /##\      /##\  |   | "
+	echo " |   | |####|    |####| |   | "
+	echo " |   |  \##/      \##/  |   | "
+	echo " |   |                  |   | "
+	echo " |   |  ==============  |   | "
+	echo " |   |__________________|   | "
+	echo " |                          | "
+	echo " |      _____________       | "
+	echo " |     |  __         |      | "
+	echo "  \    | |  |        |      | "
+	echo "   \   | |  |        |      | "
+	echo "    \  | |__|        |      | "
+	echo "     \_|_____________|_____/  "
+}
+
+function main {
+	clear
+	floppyI
+	omxplayer -o both --loop $HOME/.bin/dep/floppy.mp3 > /dev/null
+}
+
+main

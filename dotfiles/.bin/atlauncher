@@ -1,0 +1,6 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+# Programmed by CoolCat467
+
+cd $HOME/Applications/ATLauncher/
+java -jar ATLauncher.jar

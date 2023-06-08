@@ -1,0 +1,6 @@
+#!/bin/bash
+# places a apt-get package on hold, run apt-unhold to relase package for future updates.
+
+[[ $1 = "" ]] && echo "usage: apt-hold <package-name>"
+[[ $1 != "" ]] && echo "$1 hold" | sudo dpkg --set-selections &&
+echo "Held $1" >> $HOME/.bin/held_packages.txt

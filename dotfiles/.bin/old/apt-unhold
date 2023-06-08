@@ -1,0 +1,5 @@
+#!/bin/bash
+# releases an apt-get package from hold
+
+[[ $1 = "" ]] && echo "usage: apt-unhold <package-name>"
+[[ $1 != "" ]] && echo "$1 install" | sudo dpkg --set-selections

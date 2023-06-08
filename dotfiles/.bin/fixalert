@@ -1,0 +1,5 @@
+#!/bin/bash
+# Change drip sound effect
+# Programmed by CoolCat467.
+
+sudo cp /usr/share/sounds/budgie/default/alerts/sosumi.ogg /usr/share/sounds/budgie/default/alerts/drip.ogg

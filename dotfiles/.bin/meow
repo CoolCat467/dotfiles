@@ -1,0 +1,29 @@
+#!/bin/bash
+# CATS!!!!
+# Programmed by CoolCat467.
+function catI {
+	echo "       /\           /\      "
+	echo "      //\\\         //\\\     "
+	echo "     //__\\\_______//__\\\    "
+	echo "    /                   \   "
+	echo "   /    ####     ####    \  "
+	echo "  |    ######   ######    | "
+	echo "  |    ######   ######    | "
+	echo "  |     ####     ####     | "
+	echo "  |                       | "
+	echo "  |          ##           | "
+	echo "  |    ##    ##    ##     | "
+	echo "   \     ####  ####      /  "
+	echo "    \___________________/   "
+	echo "    /                   \   "
+	echo "   /                     \  "
+	echo "  /                       \ "
+}
+
+function main {
+	clear
+	catI
+	omxplayer -o both "$HOME/.bin/dep/party.wav" > /dev/null
+}
+
+main

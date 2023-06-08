@@ -1,0 +1,25 @@
+[speechsynth]
+active = True
+synctypewriter = True
+
+[showtime]
+active = True
+navytime = False
+
+[showuptime]
+active = True
+
+[loglogins]
+active = True
+logpath = ~/.bin/dep/logins.txt
+savedelay = 28800
+maxkeep = 50
+showlast = False
+showlastformat = %%A %%B %%d at %%0H:%%0M %%Y
+showsincelast = False
+
+[typewriter]
+active = True
+time = 1.5
+terminal = True
+terminalcommand = typewriter

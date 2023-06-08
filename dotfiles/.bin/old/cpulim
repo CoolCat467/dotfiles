@@ -1,0 +1,26 @@
+#!/bin/bash
+# easy use of cpulimit
+# Programmed by CoolCat467. All rights reserved.
+
+function bad {
+	echo "usage: cpulim [options]" &&
+	echo -e "options: <Path to program>" &&
+	echo -e "<Percent to limit cpu usage to>" &&
+	echo "" && exit 1
+}
+
+function run {
+	echo "Running CpuLimit on $Vrun with a limit of $Vnum% of the CPU."
+	Vrunpath=$(which $Vrun)
+	VCat="cpulimit --path=$Vrunpath -b -q --limit=$Vnum -c 4"
+	echo $VCat
+	echo ""
+	cpulimit --path=$Vrunpath -b -q --limit=$Vnum -c 4
+	$($Vrun)
+}
+
+[[ "$1" = "" ]] && bad
+[[ "$1" != "" ]] && Vrun=$1
+[[ "$2" = "" ]] && Vnum=50
+[[ "$2" != "" ]] && Vnum=$2
+[[ "$Vrun" != "" ]] && [[ "$2" != "" ]] && run

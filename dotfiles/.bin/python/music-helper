@@ -1,0 +1,112 @@
+#!/bin/bash
+# Program that helps play songs
+# Coded by Samuel Davenport.
+# Parts of code adapted from Adam Davenport's Menu System.
+# Parts of code adapted from Samuel Davenport's Music program.
+# All rights reserved.
+
+
+## VARIABLE SETUP ##
+Vloop=0
+Vsoundm=hdmi
+Vswback="False"
+
+
+## FUNCTIONS ###
+function init {
+	VPrevDir=$(python3 -c 'import os; print(os.getcwd())')
+	cd ~/.bin/
+	echo "Loading..."
+	VCat=$(python/Music.py -reflist)
+	echo "Done."
+}
+
+function menu {
+	### SELECTION SCREEN ###
+	clear
+	echo "Welcome to the Music Helper Tool Menu"
+	echo
+	echo "1. - List All Playable Music (terminal ready)"
+	echo "2. - List All Playable Music (regular text)"
+	echo "3. - Choose the 'Good' Music"
+	echo "4. - List All 'Good' Music"
+	echo "5. - List All 'Bad' Music"
+	echo
+	echo -n "Please enter an option and press RETURN: "
+	read input
+
+	### MENU INPUT ###
+	# INPUT ERROR
+	[[ "$input" != "1" ]] &&
+	[[ "$input" != "2" ]] &&
+	[[ "$input" != "3" ]] &&
+	[[ "$input" != "4" ]] &&
+	[[ "$input" != "5" ]] &&
+	clear &&
+	echo "Please enter the numeric value of the option." &&
+	echo "(press RETURN to continue)" &&
+	read && menu
+	clear
+	# VALID INPUT
+	[[ "$input" = "1" ]] && listMusic
+	[[ "$input" = "2" ]] && listMusicNoterm
+	[[ "$input" = "3" ]] && chooseGood
+	[[ "$input" = "4" ]] && listGoodMusic
+	[[ "$input" = "5" ]] && listBadMusic
+}
+
+function listMusic {
+	cd ~/.bin/
+	clear
+	echo "Chat Explosion Imminiant"
+	echo
+	chmod 755 dep/music.txt
+	cat dep/music.txt
+	echo
+	echo "If you need the file directly, use:"
+	echo "~/.bin/dep/music.txt"
+	quit
+}
+
+function listMusicNoterm {
+	VCat=$(python/Music.py -reflist -noTerm)
+	listMusic
+}
+
+function chooseGood {
+	cd ~/.bin/
+	clear
+	echo "Please enter y if the displayed song should"
+	echo "be choosen as a good song, and then press"
+	echo "RETURN."
+	echo
+	python/chooseMusic.py
+
+	echo "Saving..."
+	cat dep/music.txt > dep/goodmusic.txt
+	echo "Done."
+	quit
+}
+
+function listGoodMusic {
+	VCat=$(python/Music.py -getgood)
+	listMusic
+}
+
+function listBadMusic {
+	VCat=$(python/Music.py -getbad)
+	listMusic
+}
+
+function quit {
+	echo
+	echo "Press RETURN to Continue: "
+	read VCat
+	clear
+	echo "Have a great day! "
+}
+
+###Main###
+init
+menu
+cd $VPrevDir

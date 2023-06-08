@@ -1,0 +1,17 @@
+#!/bin/bash
+# Program that helps VncVeiwer
+# Coded by CoolCat467.
+# All rights reserved.
+
+function main {
+	if [[ $1 == '' ]]; then
+		sudo arp-scan -l
+		echo "What is the Raspberry Pi's IP?"
+		read ipaddr
+	else
+		ipaddr=$1
+    fi
+	vncviewer $ipaddr
+}
+
+main $1

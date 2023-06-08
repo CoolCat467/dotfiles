@@ -1,0 +1,173 @@
+#!/bin/bash
+# menu system
+
+### FUNCTIONS ###
+
+function menu {
+	clear
+	### WELCOME SCREEN ###
+	echo "Welcome to the Launcher!"
+	echo "Please Select a command"
+	echo
+	echo "1. Lynx - Terminal Enternet Access"
+	echo "2. Aptitude - Install new sofrware"
+	echo "3. Sort - Sort the 'To Sort.txt' file on Desktop"
+	echo "4. SoundRF - Refresh the Sound Output"
+	echo "5. Game - Activate the Game Launcher"
+	echo "6. Desktop Program - Activate 'DesktopProgram.sh' on the Desktop"
+	echo "7. Star Wars - Activate the Terminal Star Wars Movie"
+	echo "8. Youtube - Activate Youtube"
+	echo "9. Shutdown - Shutdown the Computer"
+	echo "10. Reboot - Reboot the Computer"
+	echo "11. Quit"
+	echo
+	echo -n "Please enter an option and press RETURN: "
+	read input
+	choose
+}
+
+
+function choose {
+	### MENU INPUT ###
+
+	# INPUT ERROR
+	[[ "$input" != "1" ]] &&
+	[[ "$input" != "2" ]] &&
+	[[ "$input" != "3" ]] &&
+	[[ "$input" != "4" ]] &&
+	[[ "$input" != "5" ]] &&
+	[[ "$input" != "6" ]] &&
+	[[ "$input" != "7" ]] &&
+	[[ "$input" != "8" ]] &&
+	[[ "$input" != "9" ]] &&
+	[[ "$input" != "10" ]] &&
+	[[ "$input" != "11" ]] &&
+	clear &&
+	echo "Please enter the numeric value of the option." &&
+	echo "(press RETURN to continue)" &&
+	read &&
+	[[ "$input" = "20" ]] && [[ "$USER" = "pi" ]] && startupdat
+	# VALID INPUT
+	[[ "$input" == "1" ]] && option1
+	[[ "$input" == "2" ]] && option2
+	[[ "$input" == "3" ]] && option3
+	[[ "$input" == "4" ]] && option4 && menu
+	[[ "$input" == "5" ]] && option5
+	[[ "$input" == "6" ]] && option6
+	[[ "$input" == "7" ]] && option7
+	[[ "$input" == "8" ]] && option8
+	[[ "$input" == "9" ]] && option9
+	[[ "$input" == "10" ]] && option10
+	[[ "$input" == "11" ]] && option11
+	[[ "$input" == "12" ]] && option12
+	[[ "$input" == "13" ]] && option13
+	[[ "$input" == "14" ]] && option14
+}
+
+function option1 {
+	# code executed for option 1
+	clear
+	lynx
+	menu
+}
+
+function option2 {
+	# code executed for option 2
+	clear
+	echo -n "Install package: "
+	read install
+	sudo apt-get update
+	sudo apt-get install $install
+	menu
+}
+
+function option3 {
+	# code executed for option 3
+	clear
+	echo "Starting..."
+	python3 $HOME/Desktop/.TXT\ Sorter\ v1.6.py
+	echo "Done!"
+	nano Sorted.txt
+	menu
+}
+
+function option4 {
+	# code executed for option 4
+	clear
+	SOUND=$(zenity --list --width=350 --height=250 --radiolist \
+	--title="Choose the Audio Output" \
+	--column "Select" --column="Output" TRUE "Leave as is" FALSE "Auto" FALSE "Force Headphones" FALSE "Force HDMI"  )
+	clear
+	echo "$SOUND"
+	if [ "$SOUND" = "Leave as is" ]; then
+   		echo "Leave as is"
+	elif [ "$SOUND" = "Auto" ]; then
+   		amixer -c 0 cset numid=3 0
+   		echo "Auto set"
+	elif [ "$SOUND" = "Force Headphones" ]; then
+   		amixer -c 0 cset numid=3 1
+   		echo "Headphones set"
+	elif [ "$SOUND" = "Force HDMI" ]; then
+   		amixer -c 0 cset numid=3 2
+   		echo "HDMI set"
+	else
+   		echo "cancel"
+	fi
+	clear
+}
+
+function option5 {
+	# code executed for option 5
+	clear
+	game
+	menu
+}
+
+function option6 {
+	# code executed for option 6
+	clear
+	. $HOME/Desktop/DesktopProgram.sh
+	menu
+}
+
+function option7 {
+	# code executed for option 7
+	clear
+	telnet towel blinkenlights.nl
+	menu
+}
+
+function option8 {
+	# code executed for option 8
+	clear
+	option4
+	cpulimit --path=/usr/bin/chromium-browser -b -q --limit=50 --cpu 4 &
+	chromium-browser youtube.com
+	menu
+}
+
+function option9 {
+	# shutdown
+	clear
+	echo "Have a nice day!"
+	echo "Make shure you recharge the battery!"
+	shutdown now
+}
+
+function option10 {
+	# reboot
+	clear
+	echo "See you in a seccond!"
+	reboot
+}
+
+function option11 {
+	# quit
+	clear
+	echo "Have a nice day!"
+}
+
+### MAIN ###
+menu
+
+### END PROGRAM ###
