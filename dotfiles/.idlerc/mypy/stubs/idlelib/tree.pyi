@@ -1,6 +1,16 @@
 from idlelib import zoomheight as zoomheight
 from idlelib.config import idleConf as idleConf
-from tkinter import Canvas, Entry, Event, Frame, Label, Misc, PhotoImage, Scrollbar, Widget
+from tkinter import (
+    Canvas,
+    Entry,
+    Event,
+    Frame,
+    Label,
+    Misc,
+    PhotoImage,
+    Scrollbar,
+    Widget,
+)
 from typing import Any
 
 ICONDIR: str
@@ -17,7 +27,9 @@ class TreeNode:
     children: list[TreeNode]
     x: int | None
     iconimages: dict[str, PhotoImage]
-    def __init__(self, canvas: Canvas, parent: TreeItem | None, item: TreeItem) -> None: ...
+    def __init__(
+        self, canvas: Canvas, parent: TreeItem | None, item: TreeItem
+    ) -> None: ...
     def destroy(self) -> None: ...
     def geticonimage(self, name: str) -> PhotoImage: ...
     def select(self, event: Event[Any] | None = ...) -> None: ...
@@ -62,7 +74,7 @@ class FileTreeItem(TreeItem):
     def IsEditable(self) -> bool: ...  # type: ignore[override]
     def SetText(self, text: str) -> None: ...
     def GetIconName(self) -> str | None: ...  # type: ignore[override]
-    def IsExpandable(self) -> bool: ...  # type: ignore[override]
+    def IsExpandable(self) -> bool: ...
     def GetSubList(self) -> list[TreeItem]: ...  # type: ignore[override]
 
 class ScrolledCanvas:

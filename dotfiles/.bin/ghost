@@ -4,7 +4,7 @@
 
 # VERSION 1.0.0
 
-# Interface that this program acts appon
+# Interface that this program acts upon
 VINTERFACE="wlp1s0"
 
 ## VARIABLE SETUP ##
@@ -80,7 +80,7 @@ function menuSet {
 }
 
 function set {
-	[[ "VCommand" != "" ]] &&
+	[[ "$VCommand" != "" ]] &&
 	VCommand='--mac='$VCommand &&
 	run
 }
@@ -88,7 +88,7 @@ function set {
 function run {
 	AuthSudo
 	sudo ifconfig $VINTERFACE down &&
-	sudo macchanger $VCommand $VINTERFACE &&
+	sudo macchanger "$VCommand" $VINTERFACE &&
 	sudo ifconfig $VINTERFACE up
 }
 

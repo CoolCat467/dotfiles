@@ -1,48 +1,51 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Pytalk - Simple Chat between multiple computers
 
-"Simple Chat between multiple computers"
+"""Simple Chat between multiple computers."""
 
 # Programmed by CoolCat467
 
 # Uses find_ip function, stolen from WOOF (Web Offer One File),
 # Copyright (C) 2004-2009 Simon Budig, available at
 # http://www.home.unix-ag.org/simon/woof
+from __future__ import annotations
 
-from typing import Generator
-
+import contextlib
 import os
+import socket
 import sys
 import time
-import socket
 from threading import Thread
+from typing import Generator
 
-__title__ = 'Pytalk'
-__author__ = 'CoolCat467'
-__version__ = '0.2.1'
+__title__ = "Pytalk"
+__author__ = "CoolCat467"
+__version__ = "0.2.1"
 __ver_major__ = 0
 __ver_minor__ = 2
 __ver_patch__ = 1
 
-#False for testing
+# False for testing
 NONLOCAL = True
 
-HOST = '127.0.0.1'
+HOST = "127.0.0.1"
 PORT = 30654
 BUFSIZE = 1040
 TIMEOUT = 120
 
+
 class ServerClient(Thread):
-    "Client handling, given the socket, a name to use, and a server we belong to."
+    """Client handling, given the socket, a name to use, and a server we belong to."""
+
     def __init__(
         self,
         client_socket: socket.socket,
         addr: tuple[str, int],
         name: str,
-        server: 'Server'
+        server: Server,
     ) -> None:
-        Thread.__init__(self, name='ServerClient')
+        """Initialize server client."""
+        super().__init__(name="ServerClient")
         self.socket = client_socket
         self.addr = addr
         self.name = name
@@ -50,11 +53,11 @@ class ServerClient(Thread):
 
         self.active = False
         self.stopped = False
-        self.recv_data = b''
+        self.recv_data = b""
         self.start()
 
     def run(self) -> None:
-        "Attempt to receive data, stop on error, send messages to self.chat()."
+        """Attempt to receive data, stop on error, send messages to self.chat()."""
         try:
             self.active = True
             while self.active:
@@ -63,20 +66,20 @@ class ServerClient(Thread):
                 except OSError:
                     self.stop()
                 else:
-                    if not self.recv_data or self.recv_data == b'':
+                    if not self.recv_data or self.recv_data == b"":
                         self.stop()
                     else:
-                        self.chat(self.recv_data.decode('utf-8'))
+                        self.chat(self.recv_data.decode("utf-8"))
         finally:
             self.close()
 
     def stop(self) -> None:
-        "Set self.active to False."
+        """Set self.active to False."""
         self.active = False
         self.server.client_left(self.name)
 
     def close(self) -> None:
-        "Completely close self.socket."
+        """Completely close self.socket."""
         try:
             self.socket.shutdown(socket.SHUT_RDWR)
         except OSError:
@@ -84,38 +87,41 @@ class ServerClient(Thread):
         finally:
             self.socket.close()
             self.stopped = True
-            self.server.log(f'Client {self.name}: Connection Terminated')
+            self.server.log(f"Client {self.name}: Connection Terminated")
 
     def chat(self, message: str) -> None:
-        "Adds message to self.server.chat."
+        """Add message to self.server.chat."""
         self.server.client_sent_msg(self.name, str(message))
 
     def send_all(self, message: str) -> None:
-        "Encode message in utf-8 format and send all to self.socket"
+        """Encode message in utf-8 format and send all to self.socket."""
         if self.active:
-            self.socket.sendall(message.encode('utf-8'))
+            self.socket.sendall(message.encode("utf-8"))
+
 
 class AcceptClients(Thread):
-    "Thread to accept connections to <server> and create new Client threads for it."
-    def __init__(self, server: 'Server') -> None:
-        Thread.__init__(self, name='Server Client Acceptor')
+    """Thread to accept connections to <server> and create new Client threads for it."""
+
+    def __init__(self, server: Server) -> None:
+        """Initialize client accepter."""
+        super().__init__(name="Server Client Accepter")
         self.server = server
         self.start()
 
     def run(self) -> None:
-        "Accept client connections and add client processors for each one."
+        """Accept client connections and add client processors for each one."""
         while self.server.active:
             # Accept any new connections
             try:
                 client_socket, raw_addr = self.server.socket.accept()
                 addr: tuple[str, int] = (raw_addr[0], raw_addr[1])
             except OSError as ex:
-                if str(ex) != '[Errno 22] Invalid argument':
-                    self.server.log(f'AcceptClients: Error: {ex}')
+                if str(ex) != "[Errno 22] Invalid argument":
+                    self.server.log(f"AcceptClients: Error: {ex}")
                 break
             if not self.server.active:
                 # Mypy does not understand multi-threaded
-                break # type: ignore[unreachable]
+                break  # type: ignore[unreachable]
 
             # Get the new client's IP Address
             ip: str = addr[0]
@@ -124,30 +130,42 @@ class AcceptClients(Thread):
             new_cid = str(self.server.next_cid)
             self.server.next_cid += 1
 
-            self.server.log(f'{new_cid} ({addr[0]}:{addr[1]}) Joined Server.')
+            self.server.log(f"{new_cid} ({addr[0]}:{addr[1]}) Joined Server.")
             # Tell clients about new client
             for cid in self.server.clients:
-                self.server.clients[cid].send_all(f'S {new_cid} Joined;')
+                self.server.clients[cid].send_all(f"S {new_cid} Joined;")
 
             # Add client's address to cid_to_addr dictionary
             self.server.cid_to_addr[new_cid] = ip
 
             # Add client to clients dictionary
-            self.server.clients[new_cid] = ServerClient(client_socket, addr, new_cid, self.server)
+            self.server.clients[new_cid] = ServerClient(
+                client_socket,
+                addr,
+                new_cid,
+                self.server,
+            )
 
             # Tell new client about other clients
-            others = '/'.join(cid for cid in self.server.clients if cid != new_cid)
-            self.server.clients[new_cid].send_all(f'S You: {new_cid} Others: [{others}];')
-        self.server.log('AcceptClients: No longer accepting clients.')
+            others = "/".join(
+                cid for cid in self.server.clients if cid != new_cid
+            )
+            self.server.clients[new_cid].send_all(
+                f"S You: {new_cid} Others: [{others}];",
+            )
+        self.server.log("AcceptClients: No longer accepting clients.")
+
 
 class Server(Thread):
-    "Start a new server thread on <host>:<port>."
+    """Start a new server thread on <host>:<port>."""
+
     def __init__(self, host: str, port: int) -> None:
-        Thread.__init__(self, name='Server')
+        """Initialize server."""
+        super().__init__(name="Server")
         self.host = host
         self.port = port
 
-        self.client_leave_msg = 'S Connection Terminated'
+        self.client_leave_msg = "S Connection Terminated"
 
         self.socket: socket.socket
         self.ip_addr: str | None = None
@@ -165,114 +183,139 @@ class Server(Thread):
         self.start()
 
     def __repr__(self) -> str:
-        return '<Server Object>'
+        """Return representation of self."""
+        return "<Server Object>"
 
     def log(self, data: str) -> None:
-        """Prints data."""
+        """Append message to logs."""
         self.logs.append(data)
-##        if self.do_print:
-##            while self.logging:
-##                time.sleep(0.01)
-##            self.logging = True
-##            print('Server: %s' % str(data))
-##            self.logging = False
+
+    ##        if self.do_print:
+    ##            while self.logging:
+    ##                time.sleep(0.01)
+    ##            self.logging = True
+    ##            print('Server: %s' % str(data))
+    ##            self.logging = False
 
     def start_socket(self) -> None:
-        """Initializes a new socket for the server to work on."""
-        self.log(f'Binding Socket to {self.host}:{self.port}...')
+        """Initialize a new socket for the server to work on."""
+        self.log(f"Binding Socket to {self.host}:{self.port}...")
         self.socket = socket.socket()
         try:
             self.socket.bind((self.host, self.port))
         except OSError as ex:
-            self.log(f'Error: {ex}')
+            self.log(f"Error: {ex}")
         else:
             self.active = True
             # Allow no backlog to exist. All connections should be accepted by AcceptClients thread.
             self.socket.listen(0)
-            self.ip_addr = ':'.join([str(i) for i in self.socket.getsockname()])
-            self.log('Bound to address successfully.')
+            self.ip_addr = ":".join(
+                [str(i) for i in self.socket.getsockname()],
+            )
+            self.log("Bound to address successfully.")
 
     def stop(self) -> None:
-        "Shuts down the server."
+        """Shuts down the server."""
         if not self.stopped:
-            self.log('Shutting down server...')
+            self.log("Shutting down server...")
             self.active = False
-            try:
+            with contextlib.suppress(Exception):
                 self.socket.shutdown(socket.SHUT_RDWR)
-            except Exception:
-                pass
             self.socket.close()
-            for client in [client for client in self.clients.values() if client.is_alive()]:
-                client.send_all('S Server shutting down;')
+            for client in [
+                client for client in self.clients.values() if client.is_alive()
+            ]:
+                client.send_all("S Server shutting down;")
                 client.stop()
             time.sleep(0.5)
-            if True in [client.is_alive() or client.active for client in self.clients.values()]:
+            if True in [
+                client.is_alive() or client.active
+                for client in self.clients.values()
+            ]:
                 try:
                     os.wait()
                 except ChildProcessError as ex:
-                    self.log(f'Error: {ex}')
+                    self.log(f"Error: {ex}")
             self.stopped = True
-            self.log('Server shut down.')
+            self.log("Server shut down.")
         else:
-            self.log('Server already shut down!')
+            self.log("Server already shut down!")
 
     def client_sent_msg(self, client_id: str, message: str) -> None:
-        "Function ServerClient threads call to add a message to self.chat."
-##        print(repr(message))
+        """Add a message to self.chat."""
+        ##        print(repr(message))
         self.chat.append((client_id, message))
 
     def client_left(self, client_id: str) -> None:
-        "Function ServerClient threads call to indicate they are closing."
+        """Client indicates they are closing."""
         self.client_sent_msg(client_id, self.client_leave_msg)
 
     def send_msg_to_client(
         self,
         message_with_from_addr: str,
         to_cid: str,
-        log: bool = True
+        log: bool = True,
     ) -> None:
-        "Send a given message with a from address line to a given client."
+        """Send a given message with a from address line to a given client."""
         if to_cid in self.clients:
-            if not message_with_from_addr.endswith(';'):
-                message_with_from_addr += ';'
+            if not message_with_from_addr.endswith(";"):
+                message_with_from_addr += ";"
             self.clients[to_cid].send_all(message_with_from_addr)
             if log:
-                self.log(f'Send message "{message_with_from_addr}" to client {to_cid}.')
+                self.log(
+                    f'Send message "{message_with_from_addr}" to client {to_cid}.',
+                )
         else:
-            self.log(f'Cannot send message "{message_with_from_addr}" to client {to_cid}, client does not exist!')
-            raise KeyError(f'Client {to_cid} does not exist!')
+            self.log(
+                f'Cannot send message "{message_with_from_addr}" to client {to_cid}, client does not exist!',
+            )
+            raise KeyError(f"Client {to_cid} does not exist!")
 
     def forward_msg_to_client(
         self,
         from_cid: str,
         message: str,
         to_cid: str,
-        log: bool = True
+        log: bool = True,
     ) -> None:
         """Forward a given message from given from client id to given to client id."""
         if to_cid in self.clients:
-            self.send_msg_to_client(from_cid+' '+message, to_cid, False)
+            self.send_msg_to_client(from_cid + " " + message, to_cid, False)
             if log:
-                self.log(f'Forwarded client {from_cid}\'s message "{message}" to client {to_cid}.')
+                self.log(
+                    f'Forwarded client {from_cid}\'s message "{message}" to client {to_cid}.',
+                )
         else:
-            self.log(f'Cannot forward message "{message}" to client {to_cid}, client does not exist!')
-            raise KeyError(f'Client {to_cid} does not exist!')
+            self.log(
+                f'Cannot forward message "{message}" to client {to_cid}, client does not exist!',
+            )
+            raise KeyError(f"Client {to_cid} does not exist!")
 
     def forward_msg_to_all_clients(
-        self, from_cid: str, message: str, log: bool = True
+        self,
+        from_cid: str,
+        message: str,
+        log: bool = True,
     ) -> None:
         """Forward message <message> from client <from_cid> to all active clients."""
         for client in self.clients:
             if client != from_cid:
                 self.forward_msg_to_client(from_cid, message, client, False)
         if log:
-            self.log(f'Forwarded client {from_cid}\'s message "{message}" to all clients.')
+            self.log(
+                f'Forwarded client {from_cid}\'s message "{message}" to all clients.',
+            )
 
     def process_command(self, from_cid: str, command: str) -> None:
-        "Process commands sent to server."
-        if ' ' in command:
-            cdata = command.split(' ')
-        elif command == '' or len(command) == 0 or command is None or not from_cid in self.clients:
+        """Process commands sent to server."""
+        if " " in command:
+            cdata = command.split(" ")
+        elif (
+            command == ""
+            or len(command) == 0
+            or command is None
+            or from_cid not in self.clients
+        ):
             return
         else:
             cdata = [command]
@@ -281,42 +324,80 @@ class Server(Thread):
         args = cdata[1:]
         self.log(f'Processing command "{command}" from client {from_cid}.')
 
-        if cmd == 'kick':
+        if cmd == "kick":
             if len(args) > 0:
-                if not 'A' in args:
-                    valid_clients = [cid for cid in valid_clients if cid in args and cid != '0']
+                if "A" not in args:
+                    valid_clients = [
+                        cid
+                        for cid in valid_clients
+                        if cid in args and cid != "0"
+                    ]
                 else:
-                    valid_clients = [cid for cid in valid_clients if cid != '0']
+                    valid_clients = [
+                        cid for cid in valid_clients if cid != "0"
+                    ]
                 for cid in valid_clients:
-                    self.send_msg_to_client('S Client {from_cid} kicked you from the server;', cid, False)
+                    self.send_msg_to_client(
+                        "S Client {from_cid} kicked you from the server;",
+                        cid,
+                        False,
+                    )
                     self.clients[cid].close()
-                    self.log(f'Kicked client {cid}.')
-                self.send_msg_to_client(f'S Successfully kicked {len(valid_clients)} client(s);', from_cid, False)
-            elif from_cid != '0':
-                self.send_msg_to_client('S Kicking you from the server;', from_cid, False)
+                    self.log(f"Kicked client {cid}.")
+                self.send_msg_to_client(
+                    f"S Successfully kicked {len(valid_clients)} client(s);",
+                    from_cid,
+                    False,
+                )
+            elif from_cid != "0":
+                self.send_msg_to_client(
+                    "S Kicking you from the server;",
+                    from_cid,
+                    False,
+                )
                 self.clients[from_cid].close()
-                self.log(f'Kicked client {from_cid} at their request.')
+                self.log(f"Kicked client {from_cid} at their request.")
             else:
-                self.send_msg_to_client('S You, being the host of the server, are not allowed to kick yourself. Press CTRL+C to shut down.;', '0', False)
-                self.log('Client 0 requested to be kicked. Denying request, as client zero is always the server host.')
-        elif cmd == 'list':
-            others = '/'.join(valid_clients)
-            self.send_msg_to_client(f'S You: {from_cid} Others: [{others}]', from_cid, False)
-            self.log(f'Told client {from_cid} about connected users.')
-        elif cmd == 'help':
-            self.send_msg_to_client(''.join('''S Command Help: Commands:;
+                self.send_msg_to_client(
+                    "S You, being the host of the server, are not allowed to kick yourself. Press CTRL+C to shut down.;",
+                    "0",
+                    False,
+                )
+                self.log(
+                    "Client 0 requested to be kicked. Denying request, as client zero is always the server host.",
+                )
+        elif cmd == "list":
+            others = "/".join(valid_clients)
+            self.send_msg_to_client(
+                f"S You: {from_cid} Others: [{others}]",
+                from_cid,
+                False,
+            )
+            self.log(f"Told client {from_cid} about connected users.")
+        elif cmd == "help":
+            self.send_msg_to_client(
+                "".join(
+                    """S Command Help: Commands:;
 "kick <cid>": Kicks a client from the server. Blank kicks yourself from the server;
 "list": Lists connected clients;
-"help": Server sends you this message;'''.splitlines()), from_cid, False)
-            self.log(f'Client {from_cid} requested help message.')
+"help": Server sends you this message;""".splitlines(),
+                ),
+                from_cid,
+                False,
+            )
+            self.log(f"Client {from_cid} requested help message.")
         else:
             # If nothing has already processed a command,
             # then the command is invalid
-            self.log('Client {from_cid} sent an invalid command.')
-            self.send_msg_to_client('S Invalid command. Use "help" to list valid commands.', from_cid, False)
+            self.log("Client {from_cid} sent an invalid command.")
+            self.send_msg_to_client(
+                'S Invalid command. Use "help" to list valid commands.',
+                from_cid,
+                False,
+            )
 
     def process_chat(self) -> None:
-        "Read chat messages and act upon them."
+        """Read chat messages and act upon them."""
         clients_to_delete = []
         if not self.chat:
             time.sleep(0.1)
@@ -324,42 +405,51 @@ class Server(Thread):
         for cidx in reversed(range(len(self.chat))):
             from_cid, client_msgs = self.chat[cidx]
             # Messages are split by semicolons.
-            for client_msg in client_msgs.split(';'):
+            for client_msg in client_msgs.split(";"):
                 # If message is blank (end semicolons or something), ignore message.
-                if client_msg == '':
+                if client_msg == "":
                     continue
                 # If the client that sent the message is still active
                 if from_cid in self.clients:
                     # If the client sent the client leave message, delete that client
                     if client_msg == self.client_leave_msg:
-                        if not from_cid in clients_to_delete:
+                        if from_cid not in clients_to_delete:
                             clients_to_delete.append(from_cid)
                     # Otherwise, see if the client is sending a message to another client
-                    elif ' ' in client_msg:
-                        self.log(f'received message "{client_msg}" from client id {from_cid}.')
-                        split_msg = client_msg.split(' ')
+                    elif " " in client_msg:
+                        self.log(
+                            f'received message "{client_msg}" from client id {from_cid}.',
+                        )
+                        split_msg = client_msg.split(" ")
                         to_cid = str(split_msg[0])
                         # Get the message they sent
-                        base_msg = ' '.join(split_msg[1:])
+                        base_msg = " ".join(split_msg[1:])
                         del split_msg
                         # Check if to client id is valid
                         if to_cid in self.clients:
                             if to_cid not in clients_to_delete:
-                                self.forward_msg_to_client(from_cid, base_msg, to_cid)
-                        elif to_cid == 'S':
+                                self.forward_msg_to_client(
+                                    from_cid,
+                                    base_msg,
+                                    to_cid,
+                                )
+                        elif to_cid == "S":
                             self.process_command(from_cid, base_msg)
-                        elif to_cid == 'A':
+                        elif to_cid == "A":
                             self.forward_msg_to_all_clients(from_cid, base_msg)
                         else:
-                            self.forward_msg_to_all_clients(from_cid, client_msg)
-##                            self.log('Client %s tried to send a message to an invalid client id "%s".' % (from_cid, to_cid))
-##                            self.send_msg_to_client('S Could not send message to %s, invalid client id;' % to_cid, from_cid)
+                            self.forward_msg_to_all_clients(
+                                from_cid,
+                                client_msg,
+                            )
+                    ##                            self.log('Client %s tried to send a message to an invalid client id "%s".' % (from_cid, to_cid))
+                    ##                            self.send_msg_to_client('S Could not send message to %s, invalid client id;' % to_cid, from_cid)
                     else:
                         # If no send address specified, send to all.
                         self.forward_msg_to_all_clients(from_cid, client_msg)
-##                        self.log('Client %s sent an invalid message; Telling them.' % from_cid)
-##                        if from_cid in self.clients.keys():
-##                            self.clients[from_cid].send_all('S Invalid message;')
+            ##                        self.log('Client %s sent an invalid message; Telling them.' % from_cid)
+            ##                        if from_cid in self.clients.keys():
+            ##                            self.clients[from_cid].send_all('S Invalid message;')
             del self.chat[cidx]
 
         if clients_to_delete:
@@ -367,34 +457,39 @@ class Server(Thread):
                 self.clients[client].close()
                 del self.clients[client]
             for cid in clients_to_delete:
-                self.forward_msg_to_all_clients('S', f'{cid} Left;', False)
-            leaving = ' ,'.join(clients_to_delete)
-            self.log(f'All users informed of the leaving of user(s) {leaving}.')
+                self.forward_msg_to_all_clients("S", f"{cid} Left;", False)
+            leaving = " ,".join(clients_to_delete)
+            self.log(
+                f"All users informed of the leaving of user(s) {leaving}.",
+            )
 
     def run(self) -> None:
-        "Begins accepting clients and processing chat data."
+        """Begins accepting clients and processing chat data."""
         self.start_socket()
         try:
             if self.active:
-                self.log(f'Server up and running on {self.ip_addr}!')
+                self.log(f"Server up and running on {self.ip_addr}!")
                 AcceptClients(self)
                 while self.active:
                     self.process_chat()
         except Exception as ex:
-            self.log(f'Error: {ex}')
+            self.log(f"Error: {ex}")
         finally:
             self.stop()
 
+
 class Client(Thread):
-    "Thread that, while active, continuously reads messages into self.chat."
+    """Thread that, while active, continuously reads messages into self.chat."""
+
     def __init__(
         self,
         host: str,
         port: int,
         timeout: int = 15,
-        do_print: bool = False
+        do_print: bool = False,
     ) -> None:
-        Thread.__init__(self, name='Client')
+        """Initialize client."""
+        super().__init__(name="Client")
         self.host = str(host)
         self.port = int(port)
         self.timeout = float(timeout)
@@ -409,83 +504,84 @@ class Client(Thread):
         self.start()
 
     def log(self, message: str) -> None:
-        "Logs a message if self.do_print is True."
+        """Log a message if self.do_print is True."""
         self.chat.append(message)
         if self.do_print:
-            print(f'Client: {message}')
+            print(f"Client: {message}")
 
     def start_socket(self) -> None:
-        "Initialize the socket and connect to server with given info."
+        """Initialize the socket and connect to server with given info."""
         # Initialize the socket
         self.socket = socket.socket()
         # Set timeout to given timeout
         self.socket.settimeout(self.timeout)
         # Connect the socket to a remote address and return
         # error codes if there is an error
-        self.log(f'Attempting Connection to {self.host}:{self.port}...')
+        self.log(f"Attempting Connection to {self.host}:{self.port}...")
         try:
             conn_err_code = self.socket.connect_ex((self.host, self.port))
         except socket.gaierror:
             conn_err_code = -3
         if conn_err_code:
-            self.log('Error: '+os.strerror(conn_err_code))
+            self.log("Error: " + os.strerror(conn_err_code))
         else:
             self.active = True
-            self.log('Connection established!')
+            self.log("Connection established!")
 
     def stop(self) -> None:
-        "Close self.socket."
+        """Close self.socket."""
         if not self.stopped:
-            self.log('Shutting down...')
+            self.log("Shutting down...")
             try:
                 self.socket.shutdown(socket.SHUT_RDWR)
             except OSError:
                 pass
             finally:
                 self.socket.close()
-                self.log('Socket closed.')
+                self.log("Socket closed.")
                 self.stopped = True
         else:
-            self.log('Already shut down!')
+            self.log("Already shut down!")
 
     def send(self, message: str) -> None:
-        "Encodes message and sends all on self.socket."
+        """Encode message and send all on self.socket."""
         if self.stopped:
-            raise OSError('Socket closed!')
-        if not message.endswith(';'):
-            message += ';'
+            raise OSError("Socket closed!")
+        if not message.endswith(";"):
+            message += ";"
         try:
-            self.socket.sendall(message.encode('utf-8'))
+            self.socket.sendall(message.encode("utf-8"))
         except OSError:
             self.active = False
 
     def receive(self) -> str:
-        "Returns decoded messages from self.socket."
+        """Return decoded messages from self.socket."""
         try:
             rcvd_data = self.socket.recv(BUFSIZE)
         except socket.timeout:
-            self.log('Connection Timed Out.')
-            return ''
+            self.log("Connection Timed Out.")
+            return ""
         except Exception:
-            return ''
-        return rcvd_data.decode('utf-8')
+            return ""
+        return rcvd_data.decode("utf-8")
 
     def run(self) -> None:
-        "received data and stores individual messages in self.chat."
+        """Receive data and store individual messages in self.chat."""
         try:
             self.start_socket()
             while self.active:
                 data = self.receive()
-                if data == '':
+                if data == "":
                     self.active = False
-                    self.log('Connection Terminated. Shutting down...')
+                    self.log("Connection Terminated. Shutting down...")
                     continue
-                if not data.endswith(';'):
-                    data += ';'
-                for msg in data.split(';')[:-1]:
+                if not data.endswith(";"):
+                    data += ";"
+                for msg in data.split(";")[:-1]:
                     self.log(msg)
         finally:
             self.stop()
+
 
 # Stolen from WOOF (Web Offer One File), Copyright (C) 2004-2009 Simon Budig,
 # available at http://www.home.unix-ag.org/simon/woof
@@ -493,8 +589,9 @@ class Client(Thread):
 # Utility function to guess the IP (as a string) where the server can be
 # reached from the outside. Quite nasty problem actually.
 
+
 def find_ip() -> str:
-    """Guess the IP where the server can be found from the network"""
+    """Guess the IP where the server can be found from the network."""
     # we get a UDP-socket for the TEST-networks reserved by IANA.
     # It is highly unlikely, that there is special routing used
     # for these networks, hence the socket later should give us
@@ -514,8 +611,9 @@ def find_ip() -> str:
 
     return candidates[0]
 
+
 def main() -> None:
-    "Run program"
+    """Command line interface entry point."""
     global NONLOCAL, HOST, PORT, TIMEOUT
     args = sys.argv[1:]
 
@@ -523,10 +621,11 @@ def main() -> None:
     do_server = True
     show_server_messages = False
 
-    kwargs = dict([a.split('=') for a in args if '=' in a])
+    kwargs = dict([a.split("=") for a in args if "=" in a])
 
-    if '-h' in args or '-help' in args or '--help' in args:
-        print("""Usage:
+    if "-h" in args or "-help" in args or "--help" in args:
+        print(
+            """Usage:
 \t-h : Show help message and exit.
 \tmode=[0, 1] : Set mode to Server (0) or Client (1) mode. Can be overwritten by other arguments.
 \tlocal=[True, False] : Force IP to use to be local or use public IP if not given.
@@ -535,36 +634,35 @@ def main() -> None:
 \ttimeout=<Timeout> : Set Timeout for client and set mode to Client mode.
 \tshow_server_messages : Show server messages. Mostly for debug purposes. Only has effect when in server mode.\n
 If no arguments with equals (keyword arguments) are given, first argument if given is IP to connect to and mode is automatically set to Client mode.
-If two arguments are given, first argument is IP address to connect to and seccond argument is custom Port to connect to at given IP address and mode is automatically set to Client mode.
-If no arguments are given at all, mode is automatically set to Server mode.""")
+If two arguments are given, first argument is IP address to connect to and second argument is custom Port to connect to at given IP address and mode is automatically set to Client mode.
+If no arguments are given at all, mode is automatically set to Server mode.""",
+        )
         sys.exit(0)
 
-    if 'mode' in kwargs:
-        if kwargs['mode'] in ('0', '1'):
-            defined_server = True
-            do_server = {'0':True, '1':False}[kwargs['mode']]
+    if "mode" in kwargs and kwargs["mode"] in ("0", "1"):
+        defined_server = True
+        do_server = {"0": True, "1": False}[kwargs["mode"]]
 
-    if 'local' in kwargs:
-        if kwargs['local'] in ('True', 'False'):
-            NONLOCAL = {'True':False, 'False':True}[kwargs['local']]
+    if "local" in kwargs and kwargs["local"] in ("True", "False"):
+        NONLOCAL = {"True": False, "False": True}[kwargs["local"]]
 
-    if 'ip' in kwargs and not defined_server:
-        HOST = kwargs['ip']
+    if "ip" in kwargs and not defined_server:
+        HOST = kwargs["ip"]
         defined_server = True
         do_server = False
     elif NONLOCAL:
         HOST = find_ip()
 
-    if 'port' in kwargs:
-        PORT = int(kwargs['port'])
-    if 'timeout' in kwargs and not defined_server:
-        TIMEOUT = int(kwargs['timeout'])
+    if "port" in kwargs:
+        PORT = int(kwargs["port"])
+    if "timeout" in kwargs and not defined_server:
+        TIMEOUT = int(kwargs["timeout"])
         defined_server = True
         do_server = False
 
     if not kwargs:
         if args:
-            if 'show_server_messages' in args:
+            if "show_server_messages" in args:
                 show_server_messages = True
             else:
                 leng = len(args)
@@ -583,35 +681,36 @@ If no arguments are given at all, mode is automatically set to Server mode.""")
     del defined_server, args, kwargs
 
     def see_kill(lst: list[str]) -> Generator[str, None, None]:
+        """Yield items from list while deleting them."""
         for i in reversed(range(len(lst))):
-            yield lst[-(i+1)]
-            del lst[-(i+1)]
+            yield lst[-(i + 1)]
+            del lst[-(i + 1)]
 
     if do_server:
-        print('\nWe will be attempting to host the server.')
+        print("\nWe will be attempting to host the server.")
         server = Server(HOST, PORT)
         while not server.active and not server.stopped:
             time.sleep(0.1)
         if server.stopped:
-            print('\n')
+            print("\n")
             msgs = list(server.logs)
-            if 'Error: [Errno 98] Address already in use' not in msgs:
+            if "Error: [Errno 98] Address already in use" not in msgs:
                 for message in see_kill(server.logs):
-                    print('Server: '+message)
-                print('\nError: Server stopped!')
-                print('Would you like to initalize a client anyways?')
-                if input('(y/n) : ').lower() in ('y', 'yes'):
+                    print("Server: " + message)
+                print("\nError: Server stopped!")
+                print("Would you like to initialize a client anyways?")
+                if input("(y/n) : ").lower() in ("y", "yes"):
                     do_server = False
                 else:
                     sys.exit(1)
             else:
                 if show_server_messages:
                     for message in see_kill(server.logs):
-                        print('Server: '+message)
+                        print("Server: " + message)
                 else:
                     list(see_kill(server.logs))
-                print('Error: Cannot host server: Address already in use.')
-                print('Attempting connection.')
+                print("Error: Cannot host server: Address already in use.")
+                print("Attempting connection.")
                 do_server = False
                 del msgs
 
@@ -619,41 +718,43 @@ If no arguments are given at all, mode is automatically set to Server mode.""")
     while not client.stopped and not client.active:
         time.sleep(0.1)
     if do_server:
-##        print('Disabling timeout')
-##        client.socket.settimeout(None)
+        ##        print('Disabling timeout')
+        ##        client.socket.settimeout(None)
         client.socket.setblocking(True)
-##    print(f'Timeout: {client.socket.gettimeout()}')
+    ##    print(f'Timeout: {client.socket.gettimeout()}')
     while not client.active and not client.stopped:
         time.sleep(0.1)
     if client.stopped:
-        print('\nError: Client stopped!')
+        print("\nError: Client stopped!")
 
-    print('\nPress CTRL+C to quit.\nPress Return without typing anything in to show new messages.\n')
+    print(
+        "\nPress CTRL+C to quit.\nPress Return without typing anything in to show new messages.\n",
+    )
 
     if do_server:
-        print('Note: Connecting to the server we are hosting.')
+        print("Note: Connecting to the server we are hosting.")
 
     try:
         while client.active:
             if do_server:
                 if not server.active:
                     client.active = False
-                    print('Server just died.')
+                    print("Server just died.")
                 elif show_server_messages:
                     for message in see_kill(server.logs):
-                        print('Server: '+message)
+                        print("Server: " + message)
                 else:
                     list(see_kill(server.logs))
             for message in see_kill(client.chat):
-                print('Client: '+message)
+                print("Client: " + message)
             try:
-                tosend = input('Send  : ')
-                if tosend != '':
-                    client.send(tosend+';')
+                tosend = input("Send  : ")
+                if tosend != "":
+                    client.send(tosend + ";")
             except BaseException as exc:
                 raise KeyboardInterrupt from exc
     except KeyboardInterrupt:
-        print('\nClosing program...\n')
+        print("\nClosing program...\n")
     finally:
         client.active = False
         if do_server:
@@ -663,7 +764,7 @@ If no arguments are given at all, mode is automatically set to Server mode.""")
         while not server.stopped:
             time.sleep(0.1)
         for message in see_kill(server.logs):
-            print('Server: '+message)
+            print("Server: " + message)
 
     if not client.stopped:
         try:
@@ -671,14 +772,15 @@ If no arguments are given at all, mode is automatically set to Server mode.""")
             while not client.stopped:
                 time.sleep(0.1)
         except KeyboardInterrupt:
-            print('Stopping Client...')
-##            client.close()
+            print("Stopping Client...")
+            ##            client.close()
             client.stop()
             while not client.stopped:
                 time.sleep(0.1)
     for message in see_kill(client.chat):
-        print('Client: '+message)
+        print("Client: " + message)
 
-if __name__ == '__main__':
-    print(f'{__title__} v{__version__}\nProgrammed by {__author__}.')
+
+if __name__ == "__main__":
+    print(f"{__title__} v{__version__}\nProgrammed by {__author__}.")
     main()

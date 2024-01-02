@@ -1,0 +1,75 @@
+#!/bin/bash
+# scan local network
+# written by Adam Davenport, all rights reserved.
+
+VInterface='wlp1s0'
+
+# usage
+[[ "$1" != "-f" ]] &&
+        [[ "$1" != "-d" ]] &&
+                [[ "$1" != "-s" ]] &&
+                        [[ "$1" != "-p" ]] &&
+                        [[ "$1" != "-m" ]] &&
+                                echo "usage: scan [options]" &&
+                                echo -e "options: [-f -d -p] <IP address>" &&
+                                echo -e "\t -f <fast scan>" &&
+                                echo -e "\t -d <detailed scan>" &&
+                                echo -e "\t -s <super-scan>" &&
+                                echo -e "\t -m <MAC scan>" &&
+                                echo -e "\t -p [IP] <port scan>" &&
+                                echo "" && exit 1
+
+# arp
+function arp_cache {
+        arp -i en0 -a | cut -f 2 -d '(' | cut -f 1 -d ')'
+        #sudo arp-scan -I en0 -l
+}
+
+function fast {
+        sudo arp-scan -I $VInterface -l
+}
+
+# nmap
+function nmap_scan {
+        nmap -sP $(ipconfig getoption $VInterface router)/24 | grep 'Nmap scan report for' | cut -f 5 -d ' '
+}
+
+function detailed {
+#       sudo nmap -sS $(ipconfig getoption $VInterface router)/24;
+#       sudo nmap -sP $(ipconfig getoption $VInterface router)/24;
+        sudo nmap -Pn $(ipconfig getoption $VInterface router)/24
+#       sudo nmap -sn $(ipconfig getoption $VInterface router)/24
+}
+
+function scan {
+        s="$(ifconfig | grep 'broadcast'); a="${s[@]:6}"; : $(ping -qc 5 "$a")"; arp -al
+}
+
+function portscan {
+        sudo nmap -Pn $p
+}
+
+function macscan {
+        sudo nmap -sP -n $(ipconfig getoption en0 router)/24 | grep 'Nmap scan report for\|MAC'
+}
+
+### main ###
+# arp-scan
+[[ "$1" = "-a" ]] && arp_cache
+
+# fast
+[[ "$1" = "-f" ]] && fast
+
+# detailed
+[[ "$1" = "-d" ]] && detailed
+
+# scan
+[[ "$1" = "-s" ]] && scan
+
+# portscan
+[[ "$1" = "-p" ]] && p="$2" && portscan
+
+# macscan
+[[ "$1" = "-m" ]] && macscan
+
+#exit 0

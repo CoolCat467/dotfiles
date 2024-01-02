@@ -1,8 +1,9 @@
 #!/bin/bash
 # Tells you your IP Address
+# Code copied from Adam Davenport with minor changes by CoolCat467
 
 # VOut = ifconfig wlan0 | grep "inet" | grep "broadcast" | awk '{print $2}'
 #VOut=$(ifconfig wlp1s0 | grep "inet" | grep "broadcast")
 #echo $VOut | awk '{print $2}'
 
-echo $(hostname -I | cut -d " " -f1)
+echo "$(hostname -I | cut -d " " -f1)"

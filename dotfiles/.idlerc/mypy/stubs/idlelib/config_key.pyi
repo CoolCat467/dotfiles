@@ -23,7 +23,14 @@ class GetKeysDialog(Toplevel):
     modifier_vars: list[StringVar]
     advanced: bool
     def __init__(
-        self, parent: Misc, title: str, action: str, current_key_sequences: list[str], *, _htest: bool = ..., _utest: bool = ...
+        self,
+        parent: Misc,
+        title: str,
+        action: str,
+        current_key_sequences: list[str],
+        *,
+        _htest: bool = ...,
+        _utest: bool = ...
     ) -> None: ...
     def showerror(self, *args: Any, **kwargs: Any) -> None: ...
     frame: Frame  # type: ignore[assignment]

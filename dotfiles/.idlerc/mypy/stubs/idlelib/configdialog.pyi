@@ -2,26 +2,65 @@ from collections.abc import Callable
 from idlelib import macosx as macosx
 from idlelib.autocomplete import AutoComplete as AutoComplete
 from idlelib.codecontext import CodeContext as CodeContext
-from idlelib.config import ConfigChanges as ConfigChanges, IdleConfParser, IdleUserConfParser, idleConf as idleConf
+from idlelib.config import (
+    ConfigChanges as ConfigChanges,
+    IdleConfParser,
+    IdleUserConfParser,
+    idleConf as idleConf,
+)
 from idlelib.config_key import GetKeysDialog as GetKeysDialog
 from idlelib.dynoption import DynOptionMenu as DynOptionMenu
 from idlelib.format import FormatParagraph as FormatParagraph
 from idlelib.parenmatch import ParenMatch as ParenMatch
 from idlelib.query import HelpSource as HelpSource, SectionName as SectionName
 from idlelib.squeezer import Squeezer as Squeezer
-from idlelib.textview import ScrollableTextFrame as ScrollableTextFrame, view_text as view_text
-from tkinter import BooleanVar, Button, Event, IntVar, Listbox, Misc, StringVar, Toplevel, Variable
-from tkinter.ttk import Checkbutton, Combobox, Entry, Frame, Label, LabelFrame, Notebook, OptionMenu, Radiobutton, Spinbox, Style
+from idlelib.textview import (
+    ScrollableTextFrame as ScrollableTextFrame,
+    view_text as view_text,
+)
+from tkinter import (
+    BooleanVar,
+    Button,
+    Event,
+    IntVar,
+    Listbox,
+    Misc,
+    StringVar,
+    Toplevel,
+    Variable,
+)
+from tkinter.ttk import (
+    Checkbutton,
+    Combobox,
+    Entry,
+    Frame,
+    Label,
+    LabelFrame,
+    Notebook,
+    OptionMenu,
+    Radiobutton,
+    Spinbox,
+    Style,
+)
 from typing import Any, TypeVar
 
 from mypy_extensions import VarArg
 
 changes: ConfigChanges
-reloadables: tuple[AutoComplete, CodeContext, ParenMatch, FormatParagraph, Squeezer]
+reloadables: tuple[
+    AutoComplete, CodeContext, ParenMatch, FormatParagraph, Squeezer
+]
 
 class ConfigDialog(Toplevel):
     parent: Misc
-    def __init__(self, parent: Misc, title: str = ..., *, _htest: bool = ..., _utest: bool = ...) -> None: ...
+    def __init__(
+        self,
+        parent: Misc,
+        title: str = ...,
+        *,
+        _htest: bool = ...,
+        _utest: bool = ...
+    ) -> None: ...
     frame: Frame  # type: ignore[assignment]
     note: Notebook
     extpage: ExtPage
@@ -201,7 +240,9 @@ class ExtPage(Frame):
     def load_extensions(self) -> None: ...
     def extension_selected(self, event: Event[Any] | None) -> None: ...
     def create_extension_frame(self, ext_name: str) -> None: ...
-    def set_extension_value(self, section: str, opt: dict[str, str]) -> bool: ...
+    def set_extension_value(
+        self, section: str, opt: dict[str, str]
+    ) -> bool: ...
     def save_all_changed_extensions(self) -> None: ...
 
 class HelpFrame(LabelFrame):
@@ -223,13 +264,21 @@ class HelpFrame(LabelFrame):
 _Variable = TypeVar("_Variable", StringVar, IntVar, BooleanVar)
 
 class VarTrace:
-    untraced: list[tuple[StringVar | IntVar | BooleanVar, str | tuple[str, str, str]]]
-    traced: list[tuple[StringVar | IntVar | BooleanVar, str | tuple[str, str, str]]]
+    untraced: list[
+        tuple[StringVar | IntVar | BooleanVar, str | tuple[str, str, str]]
+    ]
+    traced: list[
+        tuple[StringVar | IntVar | BooleanVar, str | tuple[str, str, str]]
+    ]
     def __init__(self) -> None: ...
     def clear(self) -> None: ...
-    def add(self, var: _Variable, callback: str | tuple[str, str, str]) -> _Variable: ...
+    def add(
+        self, var: _Variable, callback: str | tuple[str, str, str]
+    ) -> _Variable: ...
     @staticmethod
-    def make_callback(var: Variable, config: str | tuple[str, str, str]) -> Callable[[VarArg(Any)], None]: ...
+    def make_callback(
+        var: Variable, config: str | tuple[str, str, str]
+    ) -> Callable[[VarArg(Any)], None]: ...
     def attach(self) -> None: ...
     def detach(self) -> None: ...
 
@@ -241,4 +290,6 @@ def is_int(s: str) -> bool: ...
 
 class VerticalScrolledFrame(Frame):
     interior: Frame
-    def __init__(self, parent: Misc | None, *args: dict[str, Any] | None, **kw: Any) -> None: ...
+    def __init__(
+        self, parent: Misc | None, *args: dict[str, Any] | None, **kw: Any
+    ) -> None: ...

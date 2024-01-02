@@ -24,7 +24,7 @@ function floppyI {
 function main {
 	clear
 	floppyI
-	omxplayer -o both --loop $HOME/.bin/dep/floppy.mp3 > /dev/null
+	omxplayer -o both --loop "$HOME"/.bin/dep/floppy.mp3 > /dev/null
 }
 
 main

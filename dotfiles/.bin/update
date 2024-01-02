@@ -17,7 +17,7 @@ VSudoed="False"
 ## FUNCTIONS ###
 
 function Udnum {
-	VUnum=$(($VUnum + 1))
+	VUnum=$($VUnum + 1)
 }
 
 function AuthSudo {
@@ -36,7 +36,7 @@ function StartBrew {
 	echo
 	echo "$VUnum - Brew"
 	if [[  $VSudoed != "True" ]]; then
-		eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+		eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 		VBrewState=$(brew doctor)
 	else
 		VBrewState="'sudo brew' is bad, man. It could explode!"
@@ -76,7 +76,7 @@ function StartRubyGems {
 	sudo gem install rubygems-update
 	sudo update_rubygems
 	#sudo gem update
-	sudo gem update $(sudo gem outdated | cut -d ' ' -f 1)
+	sudo gem update "$(sudo gem outdated | cut -d ' ' -f 1)"
 	sudo gem update --system
 	Udnum
 }
@@ -92,9 +92,9 @@ function StartPython {
 	#pip list --format freeze | cut -d = -f 1 | xargs -n1 pip3 install --upgrade
 	# python3 -m pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 python3 -m pip install --upgrade --upgrade-strategy eager
 	Voutdated=$(pipupdate python3.11)
-	if [ ! -z "$Voutdated" ]; then
-		echo "Outdated packages: "$Voutdated
-		echo $Voutdated | xargs -n1 python3.11 -m pip install --upgrade --upgrade-strategy eager
+	if [ -n "$Voutdated" ]; then
+		echo "Outdated packages: ""$Voutdated"
+		echo "$Voutdated" | xargs -n1 python3.11 -m pip install --upgrade --upgrade-strategy eager
 	else
 		echo "No outdated packages"
 	fi
@@ -188,12 +188,12 @@ function choose {
 	[[ $input = "1" ]] && UpdatAll
 	[[ $input = "2" ]] && doquit
 	[[ $input = "3" ]] && ChooseUpdat
-	[[ $input = "4" ]] && UpdatEss
+	[[ $input = "4" ]] && updates
 }
 
 function UpdatAll {
 	clear
-	echo "Begining Update..."
+	echo "Beginning Update..."
 	StartBrew
 	StartPython
 	StartApt
@@ -208,9 +208,9 @@ function doquit {
 	echo "You should be sure to update regularly."
 }
 
-function UpdatEss {
+function updates {
 	clear
-	echo "Begining Update..."
+	echo "Beginning Update..."
 	StartApt
 	startSnap
 	StartRazz
@@ -245,7 +245,7 @@ function ChooseUpdat {
 
 function run {
 	######### If y, start ##########
-	echo "Begining Update..."
+	echo "Beginning Update..."
 	[[ $brw   = "y" ]] && StartBrew
 	[[ $phy   = "y" ]] && StartPython
 	[[ $certs = "y" ]] && updateCerts
@@ -261,26 +261,22 @@ function UpdateRegular {
 	appt=y
 	snp=y
 	run
-	quit
 }
 
 function UpdateHomebrew {
 	brw=y
 	gemz=y
 	run
-	quit
 }
 
 function UpdateAptOnly {
 	appt=y
 	run
-	quit
 }
 
 function UpdatePythonOnly {
 	phy=y
 	run
-	quit
 }
 
 function DisplayOptions {

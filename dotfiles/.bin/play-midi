@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Use pygame to play a midi file
 
-"Play a midi file."
+"""Play a midi file."""
+
+from __future__ import annotations
 
 import os
-import time
 
-import pygame.mixer
+import trio
 
-def run(args):
-    "Load music file and play it until it's over or keyboard interrupt."
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
+import pygame.mixer  # noqa: E402  # Must import after environ setup.
+
+
+async def run(args: list[str]) -> None:
+    """Load music file and play it until it's over or keyboard interrupt."""
     if not args:
         return
     file = os.path.abspath(args[0])
@@ -18,15 +23,19 @@ def run(args):
     pygame.mixer.music.play()
     try:
         while pygame.mixer.music.get_busy():
-            time.sleep(1)
+            await trio.sleep(1)
     except KeyboardInterrupt:
         pass
     pygame.mixer.music.stop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pygame.mixer.init()
     try:
-        run(os.sys.argv[1:])
+        trio.run(
+            run,
+            os.sys.argv[1:],
+            restrict_keyboard_interrupt_to_checkpoints=True,
+        )
     finally:
         pygame.quit()

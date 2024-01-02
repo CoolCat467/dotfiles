@@ -103,7 +103,7 @@ function loadMusic {
 
 function runMusic {
 	#clear
-	echo "Begining Playlist..."
+	echo "Beginning Playlist..."
 	echo
 	cd $HOME/.bin/
 	dep/tmp.sh

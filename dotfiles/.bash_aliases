@@ -19,8 +19,8 @@ xhost local:$USER > /dev/null
 
 
 ### Python ###
-alias python3='/usr/bin/python3.11'
-alias pip='/usr/bin/python3.11 -m pip '
+alias python3='/usr/bin/python3.12'
+alias pip='/usr/bin/python3.12 -m pip '
 
 
 ### TMUX ###
@@ -52,11 +52,13 @@ alias screenshot='scrot -d 10'
 alias send='woof -p 8080 -c 1 -z $1'
 #alias dlmusic='youtube-dl -x --audio-format mp3 '
 alias dlmusic='yt-dlp -x --audio-format mp3 --audio-quality 0 '
-alias cdNetworkPasswords='cd /etc/NetworkManager/system-connections/'
+#alias cdNetworkPasswords='cd /etc/NetworkManager/system-connections/'
+alias cdNetworkPasswords='cd /etc/netplan'
 alias sublime='sublime-text.subl'
 alias whatos='cat /etc/os-release'
 #alias whatdev='cat /proc/device-tree/model'
+#alias socks5tunnel='ssh -D 1337 -f -C -q -N user@remote -p 22'
 
 ### AUTO-RUN ###
 # hello
-python3.11 ~/.bin/hello
+python3.12 ~/.bin/hello

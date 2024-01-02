@@ -77,7 +77,7 @@ function chooseGood {
 	cd ~/.bin/
 	clear
 	echo "Please enter y if the displayed song should"
-	echo "be choosen as a good song, and then press"
+	echo "be chosen as a good song, and then press"
 	echo "RETURN."
 	echo
 	python/chooseMusic.py

@@ -1,5 +1,15 @@
 from collections.abc import Callable, Container
-from tkinter import BooleanVar, Button, Entry, Event, Frame, Label, Misc, StringVar, Toplevel
+from tkinter import (
+    BooleanVar,
+    Button,
+    Entry,
+    Event,
+    Frame,
+    Label,
+    Misc,
+    StringVar,
+    Toplevel,
+)
 from tkinter.font import Font
 from typing import Any
 
@@ -37,12 +47,28 @@ class Query(Toplevel):
 
 class SectionName(Query):
     def __init__(
-        self, parent: Misc, title: str, message: str, used_names: Container[str], *, _htest: bool = ..., _utest: bool = ...
+        self,
+        parent: Misc,
+        title: str,
+        message: str,
+        used_names: Container[str],
+        *,
+        _htest: bool = ...,
+        _utest: bool = ...,
     ) -> None: ...
     def entry_ok(self) -> str | None: ...
 
 class ModuleName(Query):
-    def __init__(self, parent: Misc, title: str, message: str, text0: str, *, _htest: bool = ..., _utest: bool = ...) -> None: ...
+    def __init__(
+        self,
+        parent: Misc,
+        title: str,
+        message: str,
+        text0: str,
+        *,
+        _htest: bool = ...,
+        _utest: bool = ...,
+    ) -> None: ...
     def entry_ok(self) -> str | None: ...
 
 class Goto(Query):
@@ -65,7 +91,9 @@ class HelpSource(Query):
     path: Entry
     path_error: Label
     def create_extra(self) -> None: ...
-    def askfilename(self, filetypes: list[str], initdir: str, initfile: str) -> str: ...
+    def askfilename(
+        self, filetypes: list[str], initdir: str, initfile: str
+    ) -> str: ...
     def browse_file(self) -> None: ...
     item_ok: Callable[[], str | None]
     def path_ok(self) -> str | None: ...
@@ -73,7 +101,13 @@ class HelpSource(Query):
 
 class CustomRun(Query):
     def __init__(
-        self, parent: Misc, title: str, *, cli_args: list[str] = ..., _htest: bool = ..., _utest: bool = ...
+        self,
+        parent: Misc,
+        title: str,
+        *,
+        cli_args: list[str] = ...,
+        _htest: bool = ...,
+        _utest: bool = ...,
     ) -> None: ...
     restartvar: BooleanVar
     args_error: Label

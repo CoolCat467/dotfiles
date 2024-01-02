@@ -1,53 +1,56 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Hello - Terminal greeter and login logger
 
-"Hello - Terminal greeter and login logger"
+"""Hello - Terminal greeter and login logger."""
 
 # Programmed by CoolCat467
 
 from __future__ import annotations
 
-__title__ = 'Hello - Terminal greeter and login logger'
-__author__ = 'CoolCat467'
-__version__ = '1.3.1'
+__title__ = "Hello - Terminal greeter and login logger"
+__author__ = "CoolCat467"
+__version__ = "1.3.1"
 __ver_major__ = 1
 __ver_minor__ = 3
 __ver_patch__ = 1
 
-from typing import Collection, Callable
+import contextlib
 import os
-import time
 import subprocess
+import time
 from configparser import ConfigParser
+from typing import Callable, Collection
 
 SPEECHSYNTHPOSSIBLE = True
 try:
-    import espeak
+    import espeak  # python-espeak
 except ImportError:
     SPEECHSYNTHPOSSIBLE = False
 
 
 def call_command(
     command: tuple[str, ...],
-    get_output: bool = True
+    get_output: bool = True,
 ) -> str | None:
-    "Calls a given command in a sub-shell and returns the output as a string"
+    """Return the output of calling a given command in a sub-shell as a string."""
     if get_output:
         try:
-            with subprocess.Popen(command, stdout=subprocess.PIPE) as process:
+            with subprocess.Popen(
+                command,  # noqa: S603
+                stdout=subprocess.PIPE,
+            ) as process:
                 # Call the process and pipe results back to us when done
                 output = process.communicate()[0]
         except FileNotFoundError:
             # If the command does not exist, return nothing
-            return ''
+            return ""
         try:
-            return output.decode('utf-8')
+            return output.decode("utf-8")
         except TypeError:
             # Shouldn't happen, but still.
             return str(output)
     try:
-        with subprocess.Popen(command) as process:
+        with subprocess.Popen(command) as process:  # noqa: S603
             # Call the process
             process.communicate()
     except FileNotFoundError:
@@ -57,40 +60,44 @@ def call_command(
 
 
 def combine_and(data: list[str]) -> str:
-    "Join values of text, and have 'and' with the last one properly."
+    """Join values of text, and have 'and' with the last one properly."""
     data = list(data)
     if len(data) >= 2:
-        data[-1] = 'and ' + data[-1]
+        data[-1] = "and " + data[-1]
     if len(data) > 2:
-        return ', '.join(data)
-    return ' '.join(data)
+        return ", ".join(data)
+    return " ".join(data)
 
 
 def split_time(seconds: int, precision: int = 14) -> list[int]:
-    "Split time into decades, years, months, weeks, days, hours, minutes, and seconds."
+    """Split time into decades, years, months, weeks, days, hours, minutes, and seconds."""
     seconds = int(seconds)
+
     def mod_time(sec: int, num: int) -> tuple[int, int]:
         smod = sec % num
         return int((sec - smod) // num), smod
+
     ##values = (1, 60, 60, 24, 7, 365/7/12, 12, 10, 10, 10, 1000, 10, 10, 5)
     ##mults = {0:values[0]}
     ##for i in range(len(values)):
     ##    mults[i+1] = round(mults[i] * values[i])
     ##divs = list(reversed(mults.values()))[:-1]
-    divs = (15768000000000000,
-            3153600000000000,
-            315360000000000,
-            31536000000000,
-            31536000000,
-            3153600000,
-            315360000,
-            31536000,
-            2628000,
-            604800,
-            86400,
-            3600,
-            60,
-            1)
+    divs = (
+        15768000000000000,
+        3153600000000000,
+        315360000000000,
+        31536000000000,
+        31536000000,
+        3153600000,
+        315360000,
+        31536000,
+        2628000,
+        604800,
+        86400,
+        3600,
+        60,
+        1,
+    )
 
     ret = []
     for num in divs[:precision]:
@@ -100,64 +107,74 @@ def split_time(seconds: int, precision: int = 14) -> list[int]:
 
 
 def format_time(seconds: int, single_title_allowed: bool = False) -> str:
-    "Returns time using the output of split_time."
-    times = ('eons', 'eras', 'epochs', 'ages', 'millenniums',
-             'centuries', 'decades', 'years', 'months', 'weeks',
-             'days', 'hours', 'minutes', 'seconds')
+    """Return elapsed time as string."""
+    times = (
+        "eons",
+        "eras",
+        "epochs",
+        "ages",
+        "millenniums",
+        "centuries",
+        "decades",
+        "years",
+        "months",
+        "weeks",
+        "days",
+        "hours",
+        "minutes",
+        "seconds",
+    )
     single = [i[:-1] for i in times]
-    single[5] = 'century'
+    single[5] = "century"
     split = split_time(seconds)
     zip_idx_values = [(i, v) for i, v in enumerate(split) if v]
-    if single_title_allowed:
-        if len(zip_idx_values) == 1:
-            index, value = zip_idx_values[0]
-            if value == 1:
-                return 'a '+single[index]
+    if single_title_allowed and len(zip_idx_values) == 1:
+        index, value = zip_idx_values[0]
+        if value == 1:
+            return "a " + single[index]
     data = []
     for index, value in zip_idx_values:
         title = single[index] if abs(value) < 2 else times[index]
-        data.append(str(value)+' '+title)
+        data.append(str(value) + " " + title)
     return combine_and(data)
 
 
 def get_time_of_day(hour: int) -> str:
-    "Figure out and return what time of day it is."
+    """Figure out and return what time of day it is."""
     if hour > 4 and hour < 12:
-        return 'Morning'
+        return "Morning"
     if hour > 11 and hour < 19:
         # "It is usually from 12 PM to 6 PM,
         # but during winter it may be from 12 PM to 4 PM
         # and during summer it may be from 12 PM to 8 PM."
-        return 'Afternoon'
+        return "Afternoon"
     if hour > 18 and hour < 22:
-        return 'Evening'
-    return 'Night'# hour > 21 or hour < 4:
+        return "Evening"
+    return "Night"  # hour > 21 or hour < 4:
 
 
-def get_current_time(
-    hour: int,
-    minute: int,
-    navytime: bool = False
-) -> str:
-    "Return current time as nice string, changes if navy time is True."
-    add = ''
+def get_current_time(hour: int, minute: int, navytime: bool = False) -> str:
+    """Return current time as nice string, changes if navy time is True."""
+    add = ""
     if not navytime:
         if hour == 12 and minute == 0:
-            add = ' Noon'
+            add = " Noon"
         elif (hour in {24, 0}) and minute == 0:
-            add = ' Midnight'
+            add = " Midnight"
         else:
-            add = ' '+('AM', 'PM')[int(hour > 11)]
-    hour_str, minute_str = str(hour) if navytime else str((hour - 1) % 12 + 1), str(minute)
+            add = " " + ("AM", "PM")[int(hour > 11)]
+    hour_str, minute_str = str(hour) if navytime else str(
+        (hour - 1) % 12 + 1,
+    ), str(minute)
     if minute == 0:
         minute_str = " o'clock"
     else:
         if len(hour_str) == 1:
-            hour_str = '0'+hour_str
+            hour_str = "0" + hour_str
         if len(minute_str) == 1:
-            minute_str = '0'+minute_str
-        minute_str = ':'+minute_str
-    return f'Current Time is {hour_str}{minute_str}{add}.'
+            minute_str = "0" + minute_str
+        minute_str = ":" + minute_str
+    return f"Current Time is {hour_str}{minute_str}{add}."
 
 
 def typrint(
@@ -165,20 +182,22 @@ def typrint(
     total_time: float = 0,
     delay: float = 0.1,
     regulate_delay: bool = True,
-    printfunc: Callable[[str], None] = lambda x: print(x, end='')
+    printfunc: Callable[[str], None] = lambda x: print(x, end=""),
 ) -> None:
-    """Function that prints an iterable one position at a time with a delay between each character.
-    If total_time is given, delay is ignored."""
+    """Print a string one character at a time with a delay between each character.
+
+    If total_time is given, delay is ignored.
+    """
     start = time.time()
     if total_time:
-        delay = total_time/len(iterable)
+        delay = total_time / len(iterable)
     for char, index in zip(iter(iterable), range(len(iterable))):
         printfunc(char)
         if regulate_delay:
             time.sleep(max(0, (index * delay) - (time.time() - start)))
         else:
             time.sleep(delay)
-    printfunc('\n')
+    printfunc("\n")
 
 
 def greet(
@@ -188,12 +207,12 @@ def greet(
     showuptime: dict[str, bool],
     loglogins: dict[str, str | bool | int],
     typewriter: dict[str, str | bool | float],
-    possible: dict[str, bool]
+    possible: dict[str, bool],
 ) -> None:
-    "Greet user when they open the terminal."
+    """Greet user when they open the terminal."""
     # Get the current system time
-    text = ''
-    hour, minute = map(int, time.strftime('%H %M').split(' '))
+    text = ""
+    hour, minute = map(int, time.strftime("%H %M").split(" "))
 
     # Decide what time of day it is.
     time_of_day = get_time_of_day(hour)
@@ -201,37 +220,37 @@ def greet(
     # Tell <NAME> "Good <time of day> <name>."
     text += f"Good {time_of_day} {main['name']}."
 
-    if showtime['active']:
-        text += ' '+get_current_time(hour, minute, showtime['navytime'])
-    if possible['speech'] and speechsynth['active']:
+    if showtime["active"]:
+        text += " " + get_current_time(hour, minute, showtime["navytime"])
+    if possible["speech"] and speechsynth["active"]:
         espeak.synth(text)
 
-    if showuptime['active']:
+    if showuptime["active"]:
         # See how long we've been alive
-##        uptime = 0
-##        if os.sys.platform.startswith('linux'):
-##            uptime_res = call_command(('cat', '/proc/uptime'))
-##            uptime = int(float(uptime_res.split(' ', maxsplit=1)[0]))
-##        if os.sys.platform == 'darwin':
-##            uptimeRes = callCommand(('sysctl', '-n', 'kern.boottime')).split(' ')
-##            uptime = int(time.time() - int(uptimeRes[3][:-1]))
-##        uptime = int(time.monotonic())
+        ##        uptime = 0
+        ##        if os.sys.platform.startswith('linux'):
+        ##            uptime_res = call_command(('cat', '/proc/uptime'))
+        ##            uptime = int(float(uptime_res.split(' ', maxsplit=1)[0]))
+        ##        if os.sys.platform == 'darwin':
+        ##            uptimeRes = callCommand(('sysctl', '-n', 'kern.boottime')).split(' ')
+        ##            uptime = int(time.time() - int(uptimeRes[3][:-1]))
+        ##        uptime = int(time.monotonic())
         uptime = int(time.clock_gettime(time.CLOCK_BOOTTIME))
 
         # Tell <NAME> how long the system has been active.
         uptime_pretty = format_time(uptime)
-        text += f' \nSystem has been active for {uptime_pretty}.'
+        text += f" \nSystem has been active for {uptime_pretty}."
 
-    assert isinstance(loglogins['logpath'], str), "Must be string"
-    assert isinstance(loglogins['maxkeep'], int), "Must be integer"
-    assert isinstance(loglogins['savedelay'], int), "Must be integer"
-    assert isinstance(loglogins['showlastformat'], str), "Must be string"
-    assert isinstance(typewriter['terminalcommand'], str), "Must be string"
-    assert isinstance(typewriter['time'], (int, float)), "Must be int or float"
+    assert isinstance(loglogins["logpath"], str), "Must be string"
+    assert isinstance(loglogins["maxkeep"], int), "Must be integer"
+    assert isinstance(loglogins["savedelay"], int), "Must be integer"
+    assert isinstance(loglogins["showlastformat"], str), "Must be string"
+    assert isinstance(typewriter["terminalcommand"], str), "Must be string"
+    assert isinstance(typewriter["time"], (int, float)), "Must be int or float"
 
-    if loglogins['active']:
-        log_filename = os.path.expanduser(loglogins['logpath'])
-        with open(log_filename, 'r', encoding='utf-8') as log_file:
+    if loglogins["active"]:
+        log_filename = os.path.expanduser(loglogins["logpath"])
+        with open(log_filename, encoding="utf-8") as log_file:
             logs = log_file.read().splitlines()
         current = int(time.time())
         last = 0
@@ -244,174 +263,203 @@ def greet(
                 else:
                     break
         logs.append(str(current))
-        if len(logs) > loglogins['maxkeep']:
-            logs = logs[len(logs) - loglogins['maxkeep']:]
-        if (current - last) > loglogins['savedelay']:
-            with open(log_filename, 'w', encoding='utf-8') as log_file:
-                log_file.write('\n'.join(f'{x}' for x in logs))
+        if len(logs) > loglogins["maxkeep"]:
+            logs = logs[len(logs) - loglogins["maxkeep"] :]
+        if (current - last) > loglogins["savedelay"]:
+            with open(log_filename, "w", encoding="utf-8") as log_file:
+                log_file.write("\n".join(f"{x}" for x in logs))
 
         if last != 0:
-            if loglogins['showlast']:
-                formatting = loglogins['showlastformat'].replace('%%', '%')
+            if loglogins["showlast"]:
+                formatting = loglogins["showlastformat"].replace("%%", "%")
                 lastlogin = time.strftime(formatting, time.localtime(last))
-                end = '.'
-                if loglogins['showsincelast']:
+                end = "."
+                if loglogins["showsincelast"]:
                     delta_last = format_time(int(time.time() - last))
-                    end = f', \nwhich was {delta_last} ago.'
-                    text += f' \nLast recorded login was on {lastlogin}{end}'
-            elif loglogins['showsincelast']:
+                    end = f", \nwhich was {delta_last} ago."
+                    text += f" \nLast recorded login was on {lastlogin}{end}"
+            elif loglogins["showsincelast"]:
                 delta_last = format_time(int(time.time() - last))
-                text += f' \nLast recorded login was {delta_last} ago.'
+                text += f" \nLast recorded login was {delta_last} ago."
 
-    if typewriter['active']:
-        if typewriter['terminal']:
-            if possible['typewriter']:
+    if typewriter["active"]:
+        if typewriter["terminal"]:
+            if possible["typewriter"]:
+
                 def termtype(text: str, delay: float) -> None:
-                    call_command((os.path.expanduser(str(typewriter['terminalcommand'])),
-                                 text, str(delay)), False)
+                    call_command(
+                        (
+                            os.path.expanduser(
+                                str(typewriter["terminalcommand"]),
+                            ),
+                            text,
+                            str(delay),
+                        ),
+                        False,
+                    )
+
             else:
+
                 def termtype(text: str, delay: float) -> None:
                     def printfunc(char: str) -> None:
-                        print(str(char), end='')
+                        print(str(char), end="")
+
                     typrint(text, delay=delay, printfunc=printfunc)
-            if possible['speech'] and speechsynth['active'] and speechsynth['synctypewriter']:
+
+            if (
+                possible["speech"]
+                and speechsynth["active"]
+                and speechsynth["synctypewriter"]
+            ):
                 lines = text.splitlines()
                 firstline = lines[0]
-                rest = '\n'.join(lines[1:])
-##                synthtime = espeak.core.get_parameter(1, 1)/2900
-                synthtime = 175/2900
+                rest = "\n".join(lines[1:])
+                ##                synthtime = espeak.core.get_parameter(1, 1)/2900
+                synthtime = 175 / 2900
                 termtype(firstline, synthtime)
-                resttotal = ((synthtime*len(firstline))-float(typewriter['time']))
-                termtype(rest, resttotal/len(rest))
+                resttotal = (synthtime * len(firstline)) - float(
+                    typewriter["time"],
+                )
+                termtype(rest, resttotal / len(rest))
             else:
-                termtype(text, typewriter['time']/len(text))
+                termtype(text, typewriter["time"] / len(text))
         else:
-            if possible['speech'] and speechsynth['active'] and speechsynth['synctypewriter']:
+            if (
+                possible["speech"]
+                and speechsynth["active"]
+                and speechsynth["synctypewriter"]
+            ):
                 lines = text.splitlines()
                 firstline = lines[0]
-                rest = '\n'.join(lines[1:])
-##                synthtime = espeak.core.get_parameter(1, 1)/2900
-                synthtime = 175/2900
+                rest = "\n".join(lines[1:])
+                ##                synthtime = espeak.core.get_parameter(1, 1)/2900
+                synthtime = 175 / 2900
                 typrint(firstline, synthtime)
-                typrint(rest, typewriter['time']-synthtime)
+                typrint(rest, typewriter["time"] - synthtime)
             else:
-                typrint(text, typewriter['time'])
+                typrint(text, typewriter["time"])
     else:
         print(text)
     # Wait for speech synth to complete
-    if possible['speech'] and speechsynth['active']:
-##        while espeak.espeak.is_playing():
+    if possible["speech"] and speechsynth["active"]:
+        ##        while espeak.espeak.is_playing():
         while espeak.playing():
             time.sleep(0.1)
 
 
 def run() -> None:
-    "Read and write configuration file and greet user."
+    """Read and write configuration file and greet user."""
     # Setup default values
-    speechsynth = {
-        'active': True,
-        'synctypewriter': True
-    }
-    showtime = {
-        'active': True,
-        'navytime': False
-    }
-    showuptime = {
-        'active': True
-    }
+    speechsynth = {"active": True, "synctypewriter": True}
+    showtime = {"active": True, "navytime": False}
+    showuptime = {"active": True}
     loglogins: dict[str, str | bool | int] = {
-        'active': True,
-        'logpath': '~/.bin/dep/logins.txt',
-        'savedelay': 60 * 60 * 8,
-        'maxkeep': 50,
-        'showlast': True,
-        'showlastformat': '%%A %%B %%d at %%0H:%%0M %%Y',
-        'showsincelast': True
+        "active": True,
+        "logpath": "~/.bin/dep/logins.txt",
+        "savedelay": 60 * 60 * 8,
+        "maxkeep": 50,
+        "showlast": True,
+        "showlastformat": "%%A %%B %%d at %%0H:%%0M %%Y",
+        "showsincelast": True,
     }
     typewriter: dict[str, str | bool | float] = {
-        'active': True,
-        'time': 1.5,
-        'terminal': True,
-        'terminalcommand': 'typewriter'
+        "active": True,
+        "time": 1.5,
+        "terminal": True,
+        "terminalcommand": "typewriter",
     }
-    main = {
-        'name': os.path.split(os.path.expanduser('~'))[1].title()
-    }
+    main = {"name": os.path.split(os.path.expanduser("~"))[1].title()}
 
     # Read configuration file if it exists
     config = ConfigParser()
-    config.read(('/etc/hello', os.path.expanduser('~/.hellorc')))
+    config.read(("/etc/hello", os.path.expanduser("~/.hellorc")))
 
     # For each section, set dictionary values to options.
-    if config.has_section('main'):
-        if config.has_option('main', 'name'):
-            main['name'] = config.get('main', 'name')
+    if config.has_section("main") and config.has_option("main", "name"):
+        main["name"] = config.get("main", "name")
 
-    if config.has_section('speechsynth'):
-        if config.has_option('speechsynth', 'active'):
-            speechsynth['active'] = config.getboolean('speechsynth', 'active')
-        if config.has_option('speechsynth', 'synctypewriter'):
-            speechsynth['synctypewriter'] = config.getboolean('speechsynth', 'synctypewriter')
+    if config.has_section("speechsynth"):
+        if config.has_option("speechsynth", "active"):
+            speechsynth["active"] = config.getboolean("speechsynth", "active")
+        if config.has_option("speechsynth", "synctypewriter"):
+            speechsynth["synctypewriter"] = config.getboolean(
+                "speechsynth",
+                "synctypewriter",
+            )
 
-    if config.has_section('showtime'):
-        if config.has_option('showtime', 'active'):
-            showtime['active'] = config.getboolean('showtime', 'active')
-        if config.has_option('speechsynth', 'navytime'):
-            showtime['navytime'] = config.getboolean('showtime', 'navytime')
+    if config.has_section("showtime"):
+        if config.has_option("showtime", "active"):
+            showtime["active"] = config.getboolean("showtime", "active")
+        if config.has_option("speechsynth", "navytime"):
+            showtime["navytime"] = config.getboolean("showtime", "navytime")
 
-    if config.has_section('showuptime'):
-        if config.has_option('showuptime', 'active'):
-            showuptime['active'] = config.getboolean('showuptime', 'active')
+    if config.has_section("showuptime") and config.has_option(
+        "showuptime",
+        "active",
+    ):
+        showuptime["active"] = config.getboolean("showuptime", "active")
 
-    if config.has_section('loglogins'):
-        if config.has_option('loglogins', 'active'):
-            loglogins['active'] = config.getboolean('loglogins', 'active')
-        if config.has_option('loglogins', 'logpath'):
-            loglogins['logpath'] = config.get('loglogins', 'logpath')
-        if config.has_option('loglogins', 'savedelay'):
-            loglogins['savedelay'] = config.getint('loglogins', 'savedelay')
-        if config.has_option('loglogins', 'maxkeep'):
-            loglogins['maxkeep'] = config.getint('loglogins', 'maxkeep')
-        if config.has_option('loglogins', 'showlast'):
-            loglogins['showlast'] = config.getboolean('loglogins', 'showlast')
-        if config.has_option('loglogins', 'showlastformat'):
-            value = str(config.get('loglogins', 'showlastformat'))
-            loglogins['showlastformat'] = value.replace('%', '%%')
-        if config.has_option('loglogins', 'showsincelast'):
-            loglogins['showsincelast'] = config.getboolean('loglogins', 'showsincelast')
+    if config.has_section("loglogins"):
+        if config.has_option("loglogins", "active"):
+            loglogins["active"] = config.getboolean("loglogins", "active")
+        if config.has_option("loglogins", "logpath"):
+            loglogins["logpath"] = config.get("loglogins", "logpath")
+        if config.has_option("loglogins", "savedelay"):
+            loglogins["savedelay"] = config.getint("loglogins", "savedelay")
+        if config.has_option("loglogins", "maxkeep"):
+            loglogins["maxkeep"] = config.getint("loglogins", "maxkeep")
+        if config.has_option("loglogins", "showlast"):
+            loglogins["showlast"] = config.getboolean("loglogins", "showlast")
+        if config.has_option("loglogins", "showlastformat"):
+            value = str(config.get("loglogins", "showlastformat"))
+            loglogins["showlastformat"] = value.replace("%", "%%")
+        if config.has_option("loglogins", "showsincelast"):
+            loglogins["showsincelast"] = config.getboolean(
+                "loglogins",
+                "showsincelast",
+            )
 
-    if config.has_section('typewriter'):
-        if config.has_option('typewriter', 'active'):
-            typewriter['active'] = config.getboolean('typewriter', 'active')
-        if config.has_option('typewriter', 'time'):
-            typewriter['time'] = config.getfloat('typewriter', 'time')
-        if config.has_option('typewriter', 'terminal'):
-            typewriter['terminal'] = config.getboolean('typewriter', 'terminal')
-        if config.has_option('typewriter', 'terminalcommand'):
-            typewriter['terminalcommand'] = config.get('typewriter', 'terminalcommand')
-
+    if config.has_section("typewriter"):
+        if config.has_option("typewriter", "active"):
+            typewriter["active"] = config.getboolean("typewriter", "active")
+        if config.has_option("typewriter", "time"):
+            typewriter["time"] = config.getfloat("typewriter", "time")
+        if config.has_option("typewriter", "terminal"):
+            typewriter["terminal"] = config.getboolean(
+                "typewriter",
+                "terminal",
+            )
+        if config.has_option("typewriter", "terminalcommand"):
+            typewriter["terminalcommand"] = config.get(
+                "typewriter",
+                "terminalcommand",
+            )
 
     # Write configuration file with loaded options in case it doesn't exist
     config.clear()
-    config.read_dict({'main': main})
-    config.read_dict({'speechsynth': speechsynth})
-    config.read_dict({'showtime': showtime})
-    config.read_dict({'showuptime': showuptime})
-    config.read_dict({'loglogins': loglogins})
-    config.read_dict({'typewriter': typewriter})
+    config.read_dict({"main": main})
+    config.read_dict({"speechsynth": speechsynth})
+    config.read_dict({"showtime": showtime})
+    config.read_dict({"showuptime": showuptime})
+    config.read_dict({"loglogins": loglogins})
+    config.read_dict({"typewriter": typewriter})
 
-    with open(os.path.expanduser('~/.hellorc'), 'w', encoding='utf-8') as file_point:
+    with open(
+        os.path.expanduser("~/.hellorc"),
+        "w",
+        encoding="utf-8",
+    ) as file_point:
         config.write(file_point)
         file_point.close()
 
     # Write log file and folders if it does not exist
-    if loglogins['active']:
+    if loglogins["active"]:
         # Make log folder if not exists.
-        home = os.path.expanduser('~')
-        assert isinstance(loglogins['logpath'], str), "Logpath must be string"
-        filepath = os.path.expanduser(loglogins['logpath'])
+        home = os.path.expanduser("~")
+        assert isinstance(loglogins["logpath"], str), "Logpath must be string"
+        filepath = os.path.expanduser(loglogins["logpath"])
         dirpath = os.path.split(filepath)[0]
-        logdir = dirpath[len(home):].split(os.path.sep)
+        logdir = dirpath[len(home) :].split(os.path.sep)
         cur = home
         for folder in logdir:
             cur = os.path.join(cur, folder)
@@ -420,25 +468,30 @@ def run() -> None:
 
     # Set possible dictionary's values to if speech and typewriter are
     # possible to be used.
-    assert isinstance(typewriter['terminalcommand'], str), "Must be string"
-    typewriterpossible = bool(os.name == 'posix' and\
-                         call_command(('which', typewriter['terminalcommand'])) != '')
+    assert isinstance(typewriter["terminalcommand"], str), "Must be string"
+    typewriterpossible = bool(
+        os.name == "posix"
+        and call_command(("which", typewriter["terminalcommand"])) != "",
+    )
     possible = {
-        'speech': SPEECHSYNTHPOSSIBLE,
-        'typewriter': typewriterpossible
+        "speech": SPEECHSYNTHPOSSIBLE,
+        "typewriter": typewriterpossible,
     }
 
     greet(
-        main, showtime, speechsynth, showuptime,
-        loglogins, typewriter, possible
+        main,
+        showtime,
+        speechsynth,
+        showuptime,
+        loglogins,
+        typewriter,
+        possible,
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if SPEECHSYNTHPOSSIBLE:
         espeak.init()
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         run()
-    except KeyboardInterrupt:
-        pass
-    print('', end='')
+    print("", end="")

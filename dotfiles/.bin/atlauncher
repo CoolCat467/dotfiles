@@ -2,5 +2,5 @@
 # -*- coding: utf-8 -*-
 # Programmed by CoolCat467
 
-cd $HOME/Applications/ATLauncher/
+cd "$HOME"/Applications/ATLauncher/ || return
 java -jar ATLauncher.jar

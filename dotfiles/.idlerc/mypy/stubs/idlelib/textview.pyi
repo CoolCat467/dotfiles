@@ -4,20 +4,24 @@ from tkinter.ttk import Button, Frame, Scrollbar, Widget
 from typing import Any
 
 class AutoHideScrollbar(Scrollbar):
-    def set(self, lo: float, hi: float) -> None: ...
+    def set(self, lo: float | str, hi: float | str) -> None: ...
     def pack(self, **kwargs: Any) -> None: ...  # type: ignore[override]
     def place(self, **kwargs: Any) -> None: ...  # type: ignore[override]
 
 class ScrollableTextFrame(Frame):
     yscroll: AutoHideScrollbar
     xscroll: AutoHideScrollbar | None
-    def __init__(self, master: Toplevel, wrap: str = ..., **kwargs: Any) -> None: ...
+    def __init__(
+        self, master: Toplevel, wrap: str = ..., **kwargs: Any
+    ) -> None: ...
 
 class ViewFrame(Frame):
     parent: Widget
     textframe: ScrollableTextFrame
     button_ok: Button
-    def __init__(self, parent: Widget, contents: str, wrap: str = ...) -> None: ...
+    def __init__(
+        self, parent: Widget, contents: str, wrap: str = ...
+    ) -> None: ...
     def ok(self, event: Event[Any] | None = ...) -> None: ...
 
 class ViewWindow(Toplevel):
@@ -38,8 +42,19 @@ class ViewWindow(Toplevel):
     def ok(self, event: Event[Any] | None = ...) -> None: ...
 
 def view_text(
-    parent: Widget, title: str, contents: str, modal: bool = ..., wrap: str = ..., _utest: bool = ...
+    parent: Widget,
+    title: str,
+    contents: str,
+    modal: bool = ...,
+    wrap: str = ...,
+    _utest: bool = ...,
 ) -> ViewWindow: ...
 def view_file(
-    parent: Widget, title: str, filename: str, encoding: str, modal: bool = ..., wrap: str = ..., _utest: bool = ...
+    parent: Widget,
+    title: str,
+    filename: str,
+    encoding: str,
+    modal: bool = ...,
+    wrap: str = ...,
+    _utest: bool = ...,
 ) -> ViewWindow | None: ...

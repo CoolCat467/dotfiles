@@ -1,36 +1,39 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # pipupdate - Pip Update Manager
+
+"""Print outdated packages."""
+
+from __future__ import annotations
 
 # Programmed by CoolCat467
 
-__title__ = 'Pip Update'
-__author__ = 'CoolCat467'
+__title__ = "Pip Update"
+__author__ = "CoolCat467"
 
-import sys
-import subprocess
 import json
+import subprocess
+import sys
 
 
 def call_command(command: tuple[str, ...]) -> tuple[str, str]:
-    "Calls a given command in a sub-shell and returns the output as a string"
+    """Return the output of calling a given command in a sub-shell as a string."""
     try:
         with subprocess.Popen(
-            command,
+            command,  # noqa: S603
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
         ) as process:
             # Call the process and pipe results back to us when done
             out, error = process.communicate()
     except FileNotFoundError:
         # If the command does not exist, return nothing
-        return '', 'Command does not exist'
+        return "", "Command does not exist"
     return out, error
 
 
 def run() -> None:
-    "Print outdated packages"
+    """Print outdated packages."""
     name, *args = sys.argv
     if not args:
         print(f"{name}: No python executable specified")
@@ -40,22 +43,22 @@ def run() -> None:
     response = call_command(
         (
             python_executable,
-            '-m',
-            'pip',
-            '--disable-pip-version-check',
-             'list',
-            '--outdated',
-            '--format=json',
-        )
+            "-m",
+            "pip",
+            "--disable-pip-version-check",
+            "list",
+            "--outdated",
+            "--format=json",
+        ),
     )
     if response[1]:
         print(response[1], file=sys.stderr)
         sys.exit(1)
     packages = json.loads(response[0])
-    print(' '.join((package['name'] for package in packages)))
+    print(" ".join(package["name"] for package in packages))
     sys.exit(0)
 
 
-if __name__ == '__main__':
-##    print(f'{__title__}\nProgrammed by {__author__}\n')
+if __name__ == "__main__":
+    ##    print(f'{__title__}\nProgrammed by {__author__}\n')
     run()

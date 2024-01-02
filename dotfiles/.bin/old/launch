@@ -150,14 +150,14 @@ function option9 {
 	# shutdown
 	clear
 	echo "Have a nice day!"
-	echo "Make shure you recharge the battery!"
+	echo "Make sure you recharge the battery!"
 	shutdown now
 }
 
 function option10 {
 	# reboot
 	clear
-	echo "See you in a seccond!"
+	echo "See you in a second!"
 	reboot
 }
 

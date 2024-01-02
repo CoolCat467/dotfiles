@@ -8,7 +8,9 @@ HIDE_VIRTUAL_EVENT_NAME: str
 HIDE_FOCUS_OUT_SEQUENCE: str
 HIDE_SEQUENCES: tuple[str, str]
 KEYPRESS_VIRTUAL_EVENT_NAME: str
-KEYPRESS_SEQUENCES: tuple[str, str, str, str, str, str, str, str, str, str, str]
+KEYPRESS_SEQUENCES: tuple[
+    str, str, str, str, str, str, str, str, str, str, str
+]
 KEYRELEASE_VIRTUAL_EVENT_NAME: str
 KEYRELEASE_SEQUENCE: str
 LISTUPDATE_SEQUENCE: str
@@ -42,7 +44,12 @@ class AutoCompleteWindow:
     hideaid: str
     hidewid: str
     def show_window(
-        self, comp_lists: tuple[list[str], list[str]], index: int, complete: bool, mode: int, userWantsWin: bool
+        self,
+        comp_lists: tuple[list[str], list[str]],
+        index: int,
+        complete: bool,
+        mode: int,
+        userWantsWin: bool,
     ) -> None: ...
     def winconfig_event(self, event: Event[Any] | None) -> None: ...
     def hide_event(self, event: Event[Any] | None) -> None: ...
