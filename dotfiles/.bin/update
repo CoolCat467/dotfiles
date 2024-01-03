@@ -17,7 +17,7 @@ VSudoed="False"
 ## FUNCTIONS ###
 
 function Udnum {
-	VUnum=$($VUnum + 1)
+	VUnum=$(($VUnum + 1))
 }
 
 function AuthSudo {
