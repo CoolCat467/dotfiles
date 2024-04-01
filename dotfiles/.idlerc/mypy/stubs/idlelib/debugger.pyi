@@ -75,8 +75,9 @@ class Debugger:
         self,
         message: str,
         frame: FrameType,
-        info: tuple[type[BaseException], BaseException, TracebackType]
-        | None = ...,
+        info: (
+            tuple[type[BaseException], BaseException, TracebackType] | None
+        ) = ...,
     ) -> None: ...
     def sync_source_line(self) -> None: ...
     def cont(self) -> None: ...

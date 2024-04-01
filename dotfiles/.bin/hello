@@ -163,8 +163,12 @@ def get_current_time(hour: int, minute: int, navytime: bool = False) -> str:
             add = " Midnight"
         else:
             add = " " + ("AM", "PM")[int(hour > 11)]
-    hour_str, minute_str = str(hour) if navytime else str(
-        (hour - 1) % 12 + 1,
+    hour_str, minute_str = (
+        str(hour)
+        if navytime
+        else str(
+            (hour - 1) % 12 + 1,
+        )
     ), str(minute)
     if minute == 0:
         minute_str = " o'clock"
