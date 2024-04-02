@@ -18,7 +18,7 @@ warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 
 [tool.pycln]
@@ -34,6 +34,11 @@ fix = true
 
 include = ["*.py", "*.pyi", "**/pyproject.toml"]
 
+extend-exclude = [
+    "dotfiles/.idlerc/mypy/stubs/*",
+]
+
+[tool.ruff.lint]
 select = [
     "A",     # flake8-builtins
     "ASYNC", # flake8-async
@@ -74,11 +79,7 @@ extend-ignore = [
     "D417",  # "Missing argument descriptions"
 ]
 
-extend-exclude = [
-    "dotfiles/.idlerc/mypy/stubs/*",
-]
-
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     "D100",  # undocumented-public-module
     "D103",  # undocumented-public-function

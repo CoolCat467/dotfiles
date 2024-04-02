@@ -34,6 +34,8 @@ songs NOT in 'goodmusic.txt'
 """
 from __future__ import annotations
 
+import functools
+import operator
 import os
 import sys
 from typing import Collection
@@ -115,8 +117,9 @@ def main() -> str | int:
     """Command Line Interface Entry Point."""
     # Get arguments to work off of
     args = list(sys.argv[1:])
-    splitargs: list[str] = sum(
-        [list(arg.split("=")) for arg in args if "=" in arg],
+    splitargs: list[str] = functools.reduce(
+        operator.iadd,
+        (list(arg.split("=")) for arg in args if "=" in arg),
         [],
     )
 
