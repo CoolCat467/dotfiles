@@ -22,7 +22,7 @@ async def run(args: list[str]) -> None:
     pygame.mixer.music.load(file)
     pygame.mixer.music.play()
     try:
-        while pygame.mixer.music.get_busy():
+        while pygame.mixer.music.get_busy():  # noqa: ASYNC110
             await trio.sleep(1)
     except KeyboardInterrupt:
         pass
