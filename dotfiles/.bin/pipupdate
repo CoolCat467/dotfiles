@@ -18,8 +18,8 @@ import sys
 def call_command(command: tuple[str, ...]) -> tuple[str, str]:
     """Return the output of calling a given command in a sub-shell as a string."""
     try:
-        with subprocess.Popen(
-            command,  # noqa: S603
+        with subprocess.Popen(  # noqa: S603
+            command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

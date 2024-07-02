@@ -11,7 +11,7 @@ import trio
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
-import pygame.mixer  # noqa: E402  # Must import after environ setup.
+import pygame.mixer  # Must import after environ setup.
 
 
 async def run(args: list[str]) -> None:
@@ -22,7 +22,7 @@ async def run(args: list[str]) -> None:
     pygame.mixer.music.load(file)
     pygame.mixer.music.play()
     try:
-        while pygame.mixer.music.get_busy():
+        while pygame.mixer.music.get_busy():  # noqa: ASYNC110
             await trio.sleep(1)
     except KeyboardInterrupt:
         pass

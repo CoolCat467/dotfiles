@@ -35,8 +35,8 @@ def call_command(
     """Return the output of calling a given command in a sub-shell as a string."""
     if get_output:
         try:
-            with subprocess.Popen(
-                command,  # noqa: S603
+            with subprocess.Popen(  # noqa: S603
+                command,
                 stdout=subprocess.PIPE,
             ) as process:
                 # Call the process and pipe results back to us when done

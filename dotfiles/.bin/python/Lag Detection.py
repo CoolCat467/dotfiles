@@ -13,7 +13,7 @@ def detect_lags(threshold: float) -> None:
         time.sleep(1)
         now = time.time()
         if (now - prev) > threshold:
-            print("%s Lag" % lag[round(((now - prev) * 2) - 1)])
+            print(f"{lag[round(((now - prev) * 2) - 1)]} Lag")
 
 
 lag = ["Small", "Medium", "Large", "Mega", "Super", "MAG"]
