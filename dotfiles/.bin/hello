@@ -36,7 +36,7 @@ def call_command(
     if get_output:
         try:
             with subprocess.Popen(
-                command,  # noqa: S603
+                command,
                 stdout=subprocess.PIPE,
             ) as process:
                 # Call the process and pipe results back to us when done

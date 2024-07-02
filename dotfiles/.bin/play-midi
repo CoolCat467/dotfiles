@@ -11,7 +11,7 @@ import trio
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
-import pygame.mixer  # noqa: E402  # Must import after environ setup.
+import pygame.mixer  # Must import after environ setup.
 
 
 async def run(args: list[str]) -> None:
