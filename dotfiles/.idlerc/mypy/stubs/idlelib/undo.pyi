@@ -21,7 +21,10 @@ class UndoDelegator(Delegator):
     def set_saved_change_hook(self, hook: Callable[[], Any]) -> None: ...
     def check_saved(self) -> None: ...
     def insert(
-        self, index: str, chars: str, tags: str | None = ...
+        self,
+        index: str,
+        chars: str,
+        tags: str | None = ...,
     ) -> None: ...
     def delete(self, index1: str, index2: str | None = ...) -> None: ...
     def undo_block_start(self) -> None: ...
@@ -53,7 +56,10 @@ class Command:
 
 class InsertCommand(Command):
     def __init__(
-        self, index1: str, chars: str, tags: str | None = ...
+        self,
+        index1: str,
+        chars: str,
+        tags: str | None = ...,
     ) -> None: ...
     marks_before: dict[str, str]
     index1: str
@@ -69,7 +75,9 @@ class InsertCommand(Command):
 
 class DeleteCommand(Command):
     def __init__(
-        self, index1: str | None, index2: str | None = ...
+        self,
+        index1: str | None,
+        index2: str | None = ...,
     ) -> None: ...
     marks_before: dict[str, str]
     index1: str | None

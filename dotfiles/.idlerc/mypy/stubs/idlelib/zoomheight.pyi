@@ -14,5 +14,6 @@ class ZoomHeight:
 
 def get_window_geometry(top: Misc) -> tuple[int, int, int, int]: ...
 def set_window_geometry(
-    top: Misc, geometry: tuple[int, int, int, int]
+    top: Misc,
+    geometry: tuple[int, int, int, int],
 ) -> None: ...

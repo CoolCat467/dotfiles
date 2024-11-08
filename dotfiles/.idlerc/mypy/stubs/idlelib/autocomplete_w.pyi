@@ -1,6 +1,6 @@
 from idlelib.autocomplete import ATTRS as ATTRS, FILES as FILES
 from idlelib.multicall import MC_SHIFT as MC_SHIFT
-from tkinter import *
+from tkinter import *  # noqa: F403
 from tkinter import Event, Listbox, Scrollbar, Text, Toplevel, Widget
 from typing import Any
 
@@ -9,7 +9,17 @@ HIDE_FOCUS_OUT_SEQUENCE: str
 HIDE_SEQUENCES: tuple[str, str]
 KEYPRESS_VIRTUAL_EVENT_NAME: str
 KEYPRESS_SEQUENCES: tuple[
-    str, str, str, str, str, str, str, str, str, str, str
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
 ]
 KEYRELEASE_VIRTUAL_EVENT_NAME: str
 KEYRELEASE_SEQUENCE: str

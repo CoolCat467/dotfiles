@@ -29,17 +29,20 @@ from idlelib.squeezer import Squeezer as Squeezer
 from idlelib.undo import UndoDelegator as UndoDelegator
 from io import IOBase
 from subprocess import Popen
-from tkinter import *
+from tkinter import *  # noqa: F403
 from tkinter import Event, Tk
 from types import CodeType
 from typing import Any
 
 root: Tk
+flist: PyShellFileList
 use_subprocess: bool
 HOST: str
 PORT: int
 eof: str
 warning_stream: IOBase | None
+usage_msg: str
+_warnings_showwarning: bool
 
 def idle_showwarning(
     message: str,
@@ -51,7 +54,8 @@ def idle_showwarning(
 ) -> None: ...
 def capture_warnings(capture: bool) -> None: ...
 def extended_linecache_checkcache(
-    filename: str | None = ..., orig_checkcache: Callable[[str], None] = ...
+    filename: str | None = ...,
+    orig_checkcache: Callable[[str], None] = ...,
 ) -> None: ...
 
 class PyShellEditorWindow(EditorWindow):
@@ -65,14 +69,16 @@ class PyShellEditorWindow(EditorWindow):
     def set_breakpoint(self, lineno: int) -> None: ...
     def set_breakpoint_here(self, event: Event[Any] | None = ...) -> None: ...
     def clear_breakpoint_here(
-        self, event: Event[Any] | None = ...
+        self,
+        event: Event[Any] | None = ...,
     ) -> None: ...
     def clear_file_breaks(self) -> None: ...
     def store_file_breaks(self) -> None: ...
     def restore_file_breaks(self) -> None: ...
     def update_breakpoints(self) -> None: ...
     def ranges_to_linenumbers(
-        self, ranges: tuple[Tcl_Obj, ...]
+        self,
+        ranges: tuple[Tcl_Obj, ...],
     ) -> list[int]: ...
 
 class PyShellFileList(FileList):
@@ -86,14 +92,20 @@ class ModifiedColorDelegator(ColorDelegator):
 
 class ModifiedUndoDelegator(UndoDelegator):
     def insert(
-        self, index: str, chars: str, tags: str | None = ...
+        self,
+        index: str,
+        chars: str,
+        tags: str | None = ...,
     ) -> None: ...
     def delete(self, index1: str, index2: str | None = ...) -> None: ...
     def undo_event(self, event: Event[Any]) -> None: ...  # type: ignore[override]
 
 class UserInputTaggingDelegator(Delegator):
     def insert(
-        self, index: str, chars: str, tags: str | None = ...
+        self,
+        index: str,
+        chars: str,
+        tags: str | None = ...,
     ) -> None: ...
 
 class MyRPCClient(rpc.RPCClient):
@@ -114,7 +126,9 @@ class ModifiedInterpreter(InteractiveInterpreter):
     def build_subprocess_arglist(self) -> list[str]: ...
     def start_subprocess(self) -> MyRPCClient | None: ...
     def restart_subprocess(
-        self, with_cwd: bool = ..., filename: str = ...
+        self,
+        with_cwd: bool = ...,
+        filename: str = ...,
     ) -> MyRPCClient | None: ...
     def interrupt_subprocess(self) -> None: ...
     def kill_subprocess(self) -> None: ...
@@ -123,7 +137,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
     active_seq: int | None
     def poll_subprocess(self) -> None: ...
     debugger: Debugger | None
-    def setdebugger(self, debugger: Debugger | None) -> None: ...
+    def setdebugger(self, debugger: Debugger | None) -> None: ...  # noqa: F811
     def getdebugger(self) -> Debugger | None: ...
     def open_remote_stack_viewer(self) -> None: ...
     def remote_stack_viewer(self) -> None: ...
@@ -137,7 +151,8 @@ class ModifiedInterpreter(InteractiveInterpreter):
     def showtraceback(self) -> None: ...
     def checklinecache(self) -> None: ...
     def runcommand(
-        self, code: str
+        self,
+        code: str,
     ) -> (
         bool
     ): ...  # Actually returns int object but that is a hack because of int truthyness
@@ -149,8 +164,8 @@ class ModifiedInterpreter(InteractiveInterpreter):
 
 class PyShell(OutputWindow):
     shell_title: str
-    ColorDelegator: ModifiedColorDelegator
-    UndoDelegator: ModifiedUndoDelegator
+    ColorDelegator: ModifiedColorDelegator  # type: ignore[assignment]
+    UndoDelegator: ModifiedUndoDelegator  # type: ignore[assignment]
     menu_specs: list[tuple[str, str]]
     rmenu_specs: list[tuple[str, str]]  # type: ignore[assignment]
     allow_line_numbers: bool
@@ -222,7 +237,4 @@ class PyShell(OutputWindow):
     def on_squeezed_expand(self, index: Any, text: Any, tags: Any) -> None: ...
 
 def fix_x11_paste(root: Tk) -> None: ...
-
-usage_msg: str
-
 def main() -> None: ...

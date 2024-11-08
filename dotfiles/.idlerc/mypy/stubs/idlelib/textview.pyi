@@ -12,7 +12,10 @@ class ScrollableTextFrame(Frame):
     yscroll: AutoHideScrollbar
     xscroll: AutoHideScrollbar | None
     def __init__(
-        self, master: Toplevel, wrap: str = ..., **kwargs: Any
+        self,
+        master: Toplevel,
+        wrap: str = ...,
+        **kwargs: Any,
     ) -> None: ...
 
 class ViewFrame(Frame):
@@ -20,7 +23,10 @@ class ViewFrame(Frame):
     textframe: ScrollableTextFrame
     button_ok: Button
     def __init__(
-        self, parent: Widget, contents: str, wrap: str = ...
+        self,
+        parent: Widget,
+        contents: str,
+        wrap: str = ...,
     ) -> None: ...
     def ok(self, event: Event[Any] | None = ...) -> None: ...
 

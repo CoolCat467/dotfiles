@@ -36,7 +36,9 @@ class FrameTreeItem(TreeItem):
     info: tuple[FrameType, int]
     flist: None
     def __init__(
-        self, info: tuple[FrameType, int], flist: PyShellFileList | None
+        self,
+        info: tuple[FrameType, int],
+        flist: PyShellFileList | None,
     ) -> None: ...
     def GetText(self) -> str: ...  # type: ignore[override]
     def GetSubList(self) -> list[TreeItem]: ...  # type: ignore[override]

@@ -11,7 +11,9 @@ class ReplaceDialog(SearchDialogBase):
     replvar: StringVar
     insert_tags: str | None
     def __init__(
-        self, root: Misc, engine: searchengine.SearchEngine
+        self,
+        root: Misc,
+        engine: searchengine.SearchEngine,
     ) -> None: ...
     ok: bool
     def open(self, text: Text, insert_tags: str | None = ...) -> None: ...

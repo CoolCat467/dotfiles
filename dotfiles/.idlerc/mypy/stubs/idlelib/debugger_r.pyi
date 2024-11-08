@@ -15,7 +15,7 @@ tracebacktable: dict[int, TracebackType]
 
 def wrap_frame(frame: FrameType) -> int: ...
 def wrap_info(
-    info: tuple[BaseException, str, TracebackType] | None
+    info: tuple[BaseException, str, TracebackType] | None,
 ) -> tuple[BaseException, str, int] | None: ...
 
 class GUIProxy:
@@ -38,7 +38,9 @@ class IdbAdapter:
     def set_next(self, fid: int) -> None: ...
     def set_return(self, fid: int) -> None: ...
     def get_stack(
-        self, fid: int, tbid: TracebackType | None
+        self,
+        fid: int,
+        tbid: TracebackType | None,
     ) -> tuple[FrameType, int]: ...
     def run(self, cmd: str | CodeType) -> None: ...
     def set_break(self, filename: str, lineno: str) -> str | None: ...
@@ -74,7 +76,9 @@ class GUIAdapter:
     conn: rpc.RPCClient
     gui: debugger.Debugger
     def __init__(
-        self, conn: rpc.RPCClient, gui: debugger.Debugger
+        self,
+        conn: rpc.RPCClient,
+        gui: debugger.Debugger,
     ) -> None: ...
     def interaction(
         self,
@@ -88,12 +92,17 @@ class IdbProxy:
     conn: rpc.RPCClient
     shell: PyShellEditorWindow
     def __init__(
-        self, conn: rpc.RPCClient, shell: PyShellEditorWindow, oid: str
+        self,
+        conn: rpc.RPCClient,
+        shell: PyShellEditorWindow,
+        oid: str,
     ) -> None: ...
     def call(self, __methodname: str, *args: Any, **kwargs: Any) -> Any: ...
     def run(self, cmd: str | CodeType, locals: dict[str, Any]) -> None: ...
     def get_stack(
-        self, frame: FrameType, tbid: int
+        self,
+        frame: FrameType,
+        tbid: int,
     ) -> tuple[list[tuple[FrameProxy, int]], int]: ...
     def set_continue(self) -> None: ...
     def set_step(self) -> None: ...
@@ -105,7 +114,8 @@ class IdbProxy:
     def clear_all_file_breaks(self, filename: str) -> str | None: ...
 
 def start_remote_debugger(
-    rpcclt: rpc.RPCClient, pyshell: PyShellEditorWindow
+    rpcclt: rpc.RPCClient,
+    pyshell: PyShellEditorWindow,
 ) -> debugger.Debugger: ...
 def close_remote_debugger(rpcclt: rpc.RPCClient) -> None: ...
 def close_subprocess_debugger(rpcclt: rpc.RPCClient) -> None: ...

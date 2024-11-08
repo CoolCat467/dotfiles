@@ -48,7 +48,11 @@ from mypy_extensions import VarArg
 
 changes: ConfigChanges
 reloadables: tuple[
-    AutoComplete, CodeContext, ParenMatch, FormatParagraph, Squeezer
+    AutoComplete,
+    CodeContext,
+    ParenMatch,
+    FormatParagraph,
+    Squeezer,
 ]
 
 class ConfigDialog(Toplevel):
@@ -59,7 +63,7 @@ class ConfigDialog(Toplevel):
         title: str = ...,
         *,
         _htest: bool = ...,
-        _utest: bool = ...
+        _utest: bool = ...,
     ) -> None: ...
     frame: Frame  # type: ignore[assignment]
     note: Notebook
@@ -241,7 +245,9 @@ class ExtPage(Frame):
     def extension_selected(self, event: Event[Any] | None) -> None: ...
     def create_extension_frame(self, ext_name: str) -> None: ...
     def set_extension_value(
-        self, section: str, opt: dict[str, str]
+        self,
+        section: str,
+        opt: dict[str, str],
     ) -> bool: ...
     def save_all_changed_extensions(self) -> None: ...
 
@@ -273,11 +279,14 @@ class VarTrace:
     def __init__(self) -> None: ...
     def clear(self) -> None: ...
     def add(
-        self, var: _Variable, callback: str | tuple[str, str, str]
+        self,
+        var: _Variable,
+        callback: str | tuple[str, str, str],
     ) -> _Variable: ...
     @staticmethod
     def make_callback(
-        var: Variable, config: str | tuple[str, str, str]
+        var: Variable,
+        config: str | tuple[str, str, str],
     ) -> Callable[[VarArg(Any)], None]: ...
     def attach(self) -> None: ...
     def detach(self) -> None: ...
@@ -291,5 +300,8 @@ def is_int(s: str) -> bool: ...
 class VerticalScrolledFrame(Frame):
     interior: Frame
     def __init__(
-        self, parent: Misc | None, *args: dict[str, Any] | None, **kw: Any
+        self,
+        parent: Misc | None,
+        *args: dict[str, Any] | None,
+        **kw: Any,
     ) -> None: ...

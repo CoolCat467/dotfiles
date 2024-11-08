@@ -64,7 +64,8 @@ class _ComplexBinder:
     widget: Misc
     widgetinst: Misc
     bindedfuncs: dict[
-        str | None, list[list[Callable[[Event[Any]], str | None]]]
+        str | None,
+        list[list[Callable[[Event[Any]], str | None]]],
     ]
     handlerids: list[tuple[str, str]]
     ishandlerrunning: list[list[bool]]

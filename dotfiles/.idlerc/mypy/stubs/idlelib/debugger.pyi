@@ -43,10 +43,13 @@ class Debugger:
     interacting: int
     nesting_level: int
     def __init__(
-        self, pyshell: PyShellEditorWindow, idb: IdbProxy | None = ...
+        self,
+        pyshell: PyShellEditorWindow,
+        idb: IdbProxy | None = ...,
     ) -> None: ...
     def run(
-        self, *args: str | CodeType | dict[str, object] | None
+        self,
+        *args: str | CodeType | dict[str, object] | None,
     ) -> None: ...
     stackviewer: StackViewer
     def close(self, event: Event[Any] | None = ...) -> None: ...
@@ -104,10 +107,15 @@ class StackViewer(ScrolledList):
     gui: Debugger
     stack: list[tuple[FrameType, int]]
     def __init__(
-        self, master: BaseWidget, flist: FileList, gui: Debugger
+        self,
+        master: BaseWidget,
+        flist: FileList,
+        gui: Debugger,
     ) -> None: ...
     def load_stack(
-        self, stack: list[tuple[FrameType, int]], index: int | None = ...
+        self,
+        stack: list[tuple[FrameType, int]],
+        index: int | None = ...,
     ) -> None: ...
     def popup_event(self, event: Event[Any] | None) -> str | None: ...
     def fill_menu(self) -> None: ...
@@ -128,7 +136,10 @@ class NamespaceViewer:
     subframe: Frame
     sfid: str
     def __init__(
-        self, master: BaseWidget, title: str, dict: dict[str, Any] | None = ...
+        self,
+        master: BaseWidget,
+        title: str,
+        dict: dict[str, Any] | None = ...,
     ) -> None: ...
     def load_dict(
         self,

@@ -7,7 +7,8 @@ from typing import Any
 BLOCKOPENERS: set[str]
 
 def get_spaces_firstword(
-    codeline: str, c: Pattern[str] = ...
+    codeline: str,
+    c: Pattern[str] = ...,
 ) -> tuple[str, str]: ...
 def get_line_info(codeline: str) -> tuple[int, str, str | bool]: ...
 
@@ -24,10 +25,14 @@ class CodeContext:
     cell00: Frame
     context: Text | None
     def toggle_code_context_event(
-        self, event: Event[Any] | None = ...
+        self,
+        event: Event[Any] | None = ...,
     ) -> str: ...
     def get_context(
-        self, new_topvisible: int, stopline: int = ..., stopindent: int = ...
+        self,
+        new_topvisible: int,
+        stopline: int = ...,
+        stopindent: int = ...,
     ) -> tuple[list[tuple[int, int, str, str | bool]], int]: ...
     topvisible: int
     def update_code_context(self) -> None: ...

@@ -84,20 +84,21 @@ function StartRubyGems {
 function StartPython {
 	echo
 	echo "$VUnum - Python"
-	python3.11 -m pip install --upgrade pip
+	python3.12 -m pip install --upgrade pip
 
-	python3.11 -m pip check
+	python3.12 -m pip check
 	echo
 	echo "Searching for outdated packages..."
 	#pip list --format freeze | cut -d = -f 1 | xargs -n1 pip3 install --upgrade
+	uv pip list --exclude-editable --format=json | python -c "import sys,json;print(' '.join(x['name'] for x in json.load(sys.stdin)))" | xargs uv pip install --upgrade --break-system-packages
 	# python3 -m pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 python3 -m pip install --upgrade --upgrade-strategy eager
-	Voutdated=$(pipupdate python3.11)
-	if [ -n "$Voutdated" ]; then
-		echo "Outdated packages: ""$Voutdated"
-		echo "$Voutdated" | xargs -n1 python3.11 -m pip install --upgrade --upgrade-strategy eager
-	else
-		echo "No outdated packages"
-	fi
+	# Voutdated=$(pipupdate python3.11)
+	# if [ -n "$Voutdated" ]; then
+	# 	echo "Outdated packages: ""$Voutdated"
+	# 	echo "$Voutdated" | xargs -n1 python3.11 -m pip install --upgrade --upgrade-strategy eager
+	# else
+	# 	echo "No outdated packages"
+	# fi
 	# VCat=$(which pipupdate)
 	# if [ $VCat != '' ]
 	# then

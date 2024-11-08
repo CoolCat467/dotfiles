@@ -28,7 +28,10 @@ class TreeNode:
     x: int | None
     iconimages: dict[str, PhotoImage]
     def __init__(
-        self, canvas: Canvas, parent: TreeItem | None, item: TreeItem
+        self,
+        canvas: Canvas,
+        parent: TreeItem | None,
+        item: TreeItem,
     ) -> None: ...
     def destroy(self) -> None: ...
     def geticonimage(self, name: str) -> PhotoImage: ...

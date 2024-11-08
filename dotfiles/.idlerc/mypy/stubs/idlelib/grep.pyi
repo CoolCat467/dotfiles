@@ -7,7 +7,9 @@ from tkinter import BooleanVar, Entry, Event, Misc, StringVar, Text
 from typing import Any
 
 def grep(
-    text: Text, io: IOBinding | None = ..., flist: FileList | None = ...
+    text: Text,
+    io: IOBinding | None = ...,
+    flist: FileList | None = ...,
 ) -> None: ...
 def walk_error(msg: str) -> None: ...
 def findfiles(folder: str, pattern: str, recursive: bool) -> None: ...
@@ -20,7 +22,10 @@ class GrepDialog(SearchDialogBase):
     globvar: StringVar
     recvar: BooleanVar
     def __init__(
-        self, root: Misc, engine: searchengine.SearchEngine, flist: FileList
+        self,
+        root: Misc,
+        engine: searchengine.SearchEngine,
+        flist: FileList,
     ) -> None: ...
     def open(self, text: Text, searchphrase: str | None, io: IOBinding | None = ...) -> None: ...  # type: ignore[override]
     globent: Entry

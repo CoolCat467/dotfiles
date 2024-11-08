@@ -11,8 +11,10 @@ class DynOptionMenu(OptionMenu):
         variable: StringVar,
         value: str,
         *values: str,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None: ...
     def SetMenu(
-        self, valueList: list[str], value: str | None = ...
+        self,
+        valueList: list[str],
+        value: str | None = ...,
     ) -> None: ...

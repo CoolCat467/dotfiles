@@ -18,7 +18,11 @@ class ExpandingButton(Button):
     base_text: Text
     is_dangerous: bool
     def __init__(
-        self, s: str, tags: str | None, numoflines: int, squeezer: Squeezer
+        self,
+        s: str,
+        tags: str | None,
+        numoflines: int,
+        squeezer: Squeezer,
     ) -> None: ...
     def set_is_dangerous(self) -> None: ...
     def expand(self, event: Event[Any] | None = ...) -> str | None: ...

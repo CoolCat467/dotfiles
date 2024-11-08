@@ -22,21 +22,28 @@ class AutoComplete:
     tags: None | str
     autocompletewindow: None
     def __init__(
-        self, editwin: EditorWindow | None = ..., tags: str | None = ...
+        self,
+        editwin: EditorWindow | None = ...,
+        tags: str | None = ...,
     ) -> None: ...
     @classmethod
     def reload(cls) -> None: ...
     def force_open_completions_event(
-        self, event: Event[Any] | None
+        self,
+        event: Event[Any] | None,
     ) -> str: ...
     def autocomplete_event(self, event: Event[Any] | None) -> str | None: ...
     def try_open_completions_event(
-        self, event: Event[Any] | None = ...
+        self,
+        event: Event[Any] | None = ...,
     ) -> None: ...
     def open_completions(
-        self, args: tuple[bool, bool, bool, None | int]
+        self,
+        args: tuple[bool, bool, bool, None | int],
     ) -> bool | None: ...
     def fetch_completions(
-        self, what: str, mode: int
+        self,
+        what: str,
+        mode: int,
     ) -> tuple[list[str], list[str]]: ...
     def get_entity(self, name: str) -> object: ...

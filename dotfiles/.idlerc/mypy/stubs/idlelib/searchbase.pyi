@@ -29,12 +29,15 @@ class SearchDialogBase:
     row: int
     def create_widgets(self) -> None: ...
     def make_entry(
-        self, label_text: str, var: Variable
+        self,
+        label_text: str,
+        var: Variable,
     ) -> tuple[Entry, Label]: ...
     ent: tuple[Entry, Label]
     def create_entries(self) -> None: ...
     def make_frame(
-        self, labeltext: str | None = ...
+        self,
+        labeltext: str | None = ...,
     ) -> tuple[Frame, Label | str]: ...
     def create_option_buttons(
         self,
@@ -48,7 +51,7 @@ class SearchDialogBase:
     ) -> Button: ...
     def create_command_buttons(self) -> None: ...
 
-class _searchbase(SearchDialogBase):
+class _searchbase(SearchDialogBase):  # noqa: N801
     root: Tk
     engine: SearchEngine
     def __init__(self, parent: BaseWidget) -> None: ...

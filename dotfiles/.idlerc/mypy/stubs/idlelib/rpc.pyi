@@ -15,7 +15,8 @@ def dumps(obj: str, protocol: int | None = ...) -> str: ...
 
 class CodePickler(pickle.Pickler):
     dispatch_table: dict[
-        type, Callable[[type], tuple[Callable[[bytes], type], tuple[bytes]]]
+        type,
+        Callable[[type], tuple[Callable[[bytes], type], tuple[bytes]]],
     ]
 
 BUFSIZE: int
@@ -99,7 +100,9 @@ class SocketIO:
     def decode_interrupthook(self) -> None: ...
     def mainloop(self) -> None: ...
     def getresponse(
-        self, myseq: int, wait: float
+        self,
+        myseq: int,
+        wait: float,
     ) -> tuple[str, RPCProxy] | None: ...
     def newseq(self) -> int: ...
     def putmessage(self, message: tuple[int, tuple[str, object]]) -> None: ...

@@ -92,7 +92,10 @@ class HelpSource(Query):
     path_error: Label
     def create_extra(self) -> None: ...
     def askfilename(
-        self, filetypes: list[str], initdir: str, initfile: str
+        self,
+        filetypes: list[str],
+        initdir: str,
+        initfile: str,
     ) -> str: ...
     def browse_file(self) -> None: ...
     item_ok: Callable[[], str | None]

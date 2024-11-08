@@ -6,7 +6,7 @@ from tkinter import Event, Text
 from typing import Any
 
 def format_selection(
-    format_line: Callable[[ZzDummy, str], str]
+    format_line: Callable[[ZzDummy, str], str],
 ) -> Callable[[Event[Any] | None], str]: ...
 
 class ZzDummy:

@@ -19,13 +19,16 @@ class IOBinding:
     def set_saved(self, flag: bool | int) -> None: ...
     def reset_undo(self) -> None: ...
     def set_filename_change_hook(
-        self, hook: Callable[[], None] | None
+        self,
+        hook: Callable[[], None] | None,
     ) -> None: ...
     filename: str | None
     dirname: str | None
     def set_filename(self, filename: str | None) -> None: ...
     def open(
-        self, event: Event[Any] | None = ..., editFile: str | None = ...
+        self,
+        event: Event[Any] | None = ...,
+        editFile: str | None = ...,
     ) -> str: ...
     eol_convention: str
     def loadfile(self, filename: str) -> bool: ...
@@ -40,7 +43,9 @@ class IOBinding:
     opendialog: filedialog.Open | None
     savedialog: filedialog.SaveAs | None
     filetypes: tuple[
-        tuple[str, str, str], tuple[str, str, str], tuple[str, str]
+        tuple[str, str, str],
+        tuple[str, str, str],
+        tuple[str, str],
     ]
     defaultextension: str
     def askopenfile(self) -> str: ...
