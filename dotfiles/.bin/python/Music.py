@@ -38,7 +38,7 @@ import functools
 import operator
 import os
 import sys
-from typing import Collection
+from collections.abc import Collection
 
 __title__ = "Music"
 __author__ = "CoolCat467"
