@@ -38,7 +38,10 @@ import functools
 import operator
 import os
 import sys
-from typing import Collection
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 __title__ = "Music"
 __author__ = "CoolCat467"

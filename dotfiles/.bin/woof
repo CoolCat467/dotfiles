@@ -51,11 +51,12 @@ from configparser import ConfigParser
 from email.parser import BytesParser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import BytesIO, StringIO
-from typing import TYPE_CHECKING, BinaryIO, Generator
+from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import quote, unquote, urlparse
 
 if TYPE_CHECKING:
     import email
+    from collections.abc import Generator
 
 MAX_DOWNLOADS = 1
 CPID = -1
