@@ -47,7 +47,6 @@ import traceback
 import urllib
 import urllib.request
 import zipfile
-from collections.abc import Generator
 from configparser import ConfigParser
 from email.parser import BytesParser
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -57,6 +56,7 @@ from urllib.parse import quote, unquote, urlparse
 
 if TYPE_CHECKING:
     import email
+    from collections.abc import Generator
 
 MAX_DOWNLOADS = 1
 CPID = -1
