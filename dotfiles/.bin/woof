@@ -182,7 +182,7 @@ class FileServHTTPRequestHandler(BaseHTTPRequestHandler):
         if code == 200:
             super().log_request(code, size)
 
-    def do_POST(self) -> None:  # noqa: N802
+    def do_POST(self) -> None:
         """Handle POST method on the web page."""
         global MAX_DOWNLOADS
 
@@ -263,7 +263,7 @@ class FileServHTTPRequestHandler(BaseHTTPRequestHandler):
 
         return
 
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         """Handle the GET method on the web page."""
         global MAX_DOWNLOADS, CPID
 
