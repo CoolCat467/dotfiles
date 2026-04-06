@@ -561,7 +561,7 @@ class Client(Thread):
         """Return decoded messages from self.socket."""
         try:
             rcvd_data = self.socket.recv(BUFSIZE)
-        except socket.timeout:
+        except TimeoutError:
             self.log("Connection Timed Out.")
             return ""
         except Exception:

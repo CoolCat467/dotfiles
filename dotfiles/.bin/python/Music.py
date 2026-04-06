@@ -32,6 +32,7 @@ Resets Music List File to songs present in file already AND
 songs NOT in 'goodmusic.txt'
 
 """
+
 from __future__ import annotations
 
 import functools
